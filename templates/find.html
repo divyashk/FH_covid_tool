@@ -1,0 +1,154 @@
+{% extends 'layouts/base.html' %}
+
+{% block css %}
+<style>
+    #header {
+        margin-bottom: 24px;
+        display: flex;
+        flex-flow: row;
+    }
+
+    .right {
+        margin-left: auto;
+    }
+
+    @media (max-width: 600px) {
+        #header {
+            display: block;
+        }
+
+        #dash-btn {
+            margin: 0 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+
+
+  <div id="find_loc" class="d-flex w-50">
+    <div id="find_loc_heading">
+        <h4>Enter your requirements</h4>
+    </div>
+    
+    <div class="row">
+        <div class="col s12">
+        <div class="row">
+            <div class="input-field col s12">
+            <i class="material-icons prefix">dashboard customize</i>
+            <input type="text" id="autocomplete-input-item" class="autocomplete">
+            <label for="autocomplete-input-item">Item</label>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                <i class="material-icons prefix">map</i>
+                <input type="text" id="autocomplete-input-state" class="autocomplete">
+                <label for="autocomplete-input-state">State</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                <i class="material-icons prefix">location_on</i>
+                <input type="text" id="autocomplete-input-city" class="autocomplete">
+                <label for="autocomplete-input-city">City</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="waves-effect waves-light btn">Find</a>
+
+  </div>
+        
+
+    {% block js %}
+        <script>
+            
+            $(document).ready(function(){
+                $('#autocomplete-input-city').autocomplete({
+                data: {
+                    "Apple": null,
+                    "Microsoft": null,
+                    "Google": 'https://placehold.it/250x250'
+                },
+                });
+            });
+
+            // Now making a post request
+            var payload = {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+
+            fetch('/', payload)
+                .then(res => res.json())
+                .then(res => {
+                    
+                    const dataDict = res['quizData'];
+
+                    const quizzesRow = document.querySelector('#quizzes-row');
+                    quizzesRow.innerHTML = '';
+                    quizzesRow.classList.remove('center-align')
+
+                    for (const quiz of dataDict) {
+                        if (quiz.homepage) {
+                            let quizDesc = `<p>Increase your knowledge and have fun taking part in this Quiz organised by IIT Mandi students.</p>`;
+                            if (quiz.quizDesc) {
+                                quizDesc = quiz.quizDesc;
+                            }
+
+                            let quizImg = `https://quiziit.ml/posters/political.jpg`;
+                            if (quiz.quizImg) {
+                                quizImg = quiz.quizImg;
+                            }
+
+                            quizzesRow.innerHTML +=
+                                `
+                            <div class="col s12 m6">
+                                <div class="card horizontal">
+                                    <div class="card-image">
+                                        <img class="poster-img" src="` + quizImg + `">
+                                    </div>
+                                    <div class="card-stacked">
+                                        <div class="card-content">
+                                            <span class="card-title">` + quiz.quizName + `</span>
+                                            ` + quizDesc + `
+                                        </div>
+                                        <div class="card-action">
+                                            <a href="` + quiz.qid + `">Visit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                        }
+
+                    }
+
+                })
+                .catch(err => {
+                    console.log("Error came in quizzes api");
+                })
+
+        
+        </script>
+
+
+
+
+    {% endblock %}
+{% endblock %}

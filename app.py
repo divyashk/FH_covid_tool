@@ -41,10 +41,9 @@ def give_favicon():
 
 
 @app.route('/')
-def index():
-    divyash = db.collection("users").where("name","==","Divyasheel");
-    name = divyash
-    return render_template('index.html', name=name)
+@app.route('/find')
+def find():
+    return render_template('find.html')
 
 
 
@@ -55,7 +54,7 @@ def login_register():
     '''
 
     if "logged_in" in session and session["logged_in"]:
-        return redirect(url_for("my_quizes_dashboard"))
+        return redirect(url_for("add"))
 
     if request.method == 'GET':
         return render_template('login.html')
