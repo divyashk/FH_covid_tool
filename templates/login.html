@@ -1,0 +1,366 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+<title>Login | Quiz IIT Mandi</title>
+{% endblock %}
+
+{% block css %}
+<style>
+    #main {
+        display: flex;
+        height: 90vh;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #login-container,
+    #password-container {
+        max-width: 400px;
+    }
+
+    #next-btn,
+    #back-btn,
+    #login-btn,
+    #back-btn2,
+    #create-btn {
+        cursor: pointer;
+    }
+
+    #un-input,
+    #pass-input {
+        margin: 32px 0 12px 0;
+    }
+
+    #loading-anim,
+    #loading-anim-pass,
+    #loading-anim-newuser {
+        margin: 0;
+        visibility: hidden;
+    }
+
+    #us-just-show-1,
+    #us-just-show-2 {
+        margin-top: 12px;
+        display: flex;
+        flex-flow: column;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Part Quizes with the link to go to them or something of that kind -->
+<!-- A button on the right through which one can create -->
+
+<div id="main">
+    <form id="login-container" class="card darken-1">
+        <div class="card-content">
+            <span class="card-title">Quiz Platform Login/Register</span>
+            <p>I am a very simple quiz creating platform. I am good at containing small bits of information.</p>
+
+            <!-- <div id="un-input" class="input-field col s6">
+                    <i class="material-icons prefix">account_circle</i>
+                    <input id="un" type="text" class="validate">
+                    <label for="icon_prefix">Enter Your UserName</label>
+                </div> -->
+
+            <div id="un-input" class="input-field col s6">
+                <i class="material-icons prefix">account_circle</i>
+                <input placeholder="Enter your UserName" id="un" type="text" class="validate">
+                <label for="un">UserName</label>
+            </div>
+            <div id="loading-anim" class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+        <div class="card-action">
+            <a type="submit" id="next-btn">Next</a>
+        </div>
+    </form>
+
+    <!-- Password container -->
+    <form id="password-container" class="card darken-1" style="display: none;">
+        <div class="card-content">
+            <span class="card-title">Enter Password</span>
+            <p>Account with this username exists, enter the password to get loggined.</p>
+
+            <div id="us-just-show-1" class="center-align">
+                <i class="material-icons" style="font-size: 100px; color: #26a69a;">account_circle</i>
+                <label id="user_name_1" style="font-size: 1.8rem;" for="user_name_1">UserName</label>
+            </div>
+
+            <div id="pass-input" class="input-field col s6">
+                <i class="material-icons prefix">lock_open</i>
+                <input placeholder="Enter Password" id="pass" type="password" class="validate">
+                <label for="pass">Password</label>
+            </div>
+
+            <div id="loading-anim-pass" class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+        <div class="card-action">
+            <a id="back-btn">Back</a>
+            <a type="submit" id="login-btn">Login</a>
+        </div>
+    </form>
+
+    <!-- Create a New User Form -->
+    <form id="newuser-container" class="card darken-1" style="display: none;">
+        <div class="card-content">
+            <span class="card-title">Create Account</span>
+            <p>No Account with this username found, fill this form to create a new account</p>
+
+            <div id="us-just-show-2" class="center-align">
+                <i class="material-icons" style="font-size: 100px; color: #26a69a;">account_circle</i>
+                <label id="user_name_2" style="font-size: 1.8rem;" for="user_name_2">UserName</label>
+            </div>
+
+            <div id="name-input" class="input-field col s6">
+                <input placeholder="Enter Your Name" id="new-name" type="text" class="validate" required>
+                <label for="name">Name</label>
+            </div>
+
+            <div id="phone-input" class="input-field col s6">
+                <input placeholder="Enter Mobile Number" id="new-phone" type="text" class="validate" required>
+                <label for="name">Phone</label>
+            </div>
+
+            <div id="pass-input" class="input-field col s6">
+                <input placeholder="Enter password" id="new-pass" type="password" class="validate" required>
+                <label for="new-pass">Password</label>
+            </div>
+
+            <div id="confirm-input" class="input-field col s6">
+                <input placeholder="Enter Password second time" id="confirm-pass" type="password" class="validate"
+                    required>
+                <label for="confirm-pass">Confirm Password</label>
+            </div>
+
+            <div id="loading-anim-newuser" class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+        <div class="card-action">
+            <a id="back-btn2">Back</a>
+            <a type="submit" id="create-btn">Create</a>
+        </div>
+    </form>
+
+
+</div>
+
+<script>
+    const byId = (id) => { return document.getElementById(id) }
+
+    window.userNameUsed = "";
+
+    function tryLogin(e) {
+        e.preventDefault();
+
+        const un = byId('un').value;
+        console.log(un);
+
+        if (!un) return false;
+
+        byId('loading-anim').style.visibility = "visible";
+
+        // Now making a post request
+        const data = {
+            username: un
+        }
+
+        var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }
+
+        fetch('/username_exists', payload)
+            .then(res => res.json())
+            .then(res => {
+                console.log('Yes, check here', res);
+                byId('loading-anim').style.visibility = "hidden";
+
+
+                // Now from the api result, we check if the user already exists or not
+                // If not exists, show create a new account menu
+                // If found, show the input password block
+                window.userNameUsed = un;
+
+                if (res['success']) {
+                    byId('user_name_1').innerHTML = un;
+                    byId('password-container').style.display = "block";
+                    byId('login-container').style.display = "none";
+                    byId('pass').focus();
+
+                } else {
+
+                    if (res['err_code'] === '1') {
+                        // The user doesn't exists, create a new user form to be shown
+                        console.log("show new user creation form");
+
+                        byId('user_name_2').innerHTML = un;
+                        byId('newuser-container').style.display = "block";
+                        byId('login-container').style.display = "none";
+                        byId('new-name').focus();
+
+                    } else {
+                        // Not a valid username
+                        alert("Not a valid username, don't user special characters");
+                    }
+                }
+
+            })
+            .catch(err => {
+                console.log("Error came in login api");
+                byId('loading-anim').style.visibility = "hidden";
+            })
+
+    }
+
+    byId('login-container').onsubmit = tryLogin;
+    byId('next-btn').onclick = tryLogin;
+
+
+    function tryPass(e) {
+        e.preventDefault();
+
+        const pass = byId('pass').value;
+        console.log(pass);
+
+        if (!pass) return false;
+
+        byId('loading-anim-pass').style.visibility = "visible";
+
+        // Now making a post request
+        const data = {
+            username: window.userNameUsed,
+            password: pass
+        }
+
+        var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }
+
+        fetch('/login', payload)
+            .then(res => res.json())
+            .then(res => {
+                console.log('Yes, check here', res);
+                byId('loading-anim-pass').style.visibility = "hidden";
+
+
+                // Now from the api result, we check if the password was correct or not, if it was redirect the user
+                // If not exists, show incorrect passwor warning
+                if (res.success) {
+                    location.reload();
+                }
+                else {
+                    alert("Wrong Password!");
+                }
+
+
+            })
+            .catch(err => {
+                console.log("Error came in login api");
+                byId('loading-anim-pass').style.visibility = "hidden";
+            })
+    }
+
+
+    byId('password-container').onsubmit = tryPass;
+    byId('login-btn').onclick = tryPass;
+
+
+    byId('back-btn').onclick = function () {
+        window.userNameUsed = "";
+
+        byId('password-container').style.display = "none";
+        byId('login-container').style.display = "block";
+    }
+
+    byId('back-btn2').onclick = function () {
+        window.userNameUsed = "";
+
+        byId('newuser-container').style.display = "none";
+        byId('login-container').style.display = "block";
+    }
+
+    function tryNewAccount(e) {
+        e.preventDefault();
+
+        if (!byId('new-name').value) {
+            byId('new-name').classList.add('invalid');
+            byId('new-name').focus();
+            return false;
+        }
+
+        if (!byId('new-phone').value) {
+            byId('new-phone').classList.add('invalid');
+            byId('new-phone').focus();
+            return false;
+        }
+
+        if (!byId('new-pass').value) {
+            byId('new-pass').classList.add('invalid');
+            byId('new-pass').focus();
+            return false;
+        }
+
+        if (byId("new-pass").value !== byId("confirm-pass").value) {
+            alert("Password and confirm password do not match!");
+            byId("confirm-pass").classList.add('invalid');
+            return false;
+        }
+
+        byId('loading-anim-newuser').style.visibility = "visible";
+
+        const data = {
+            username: window.userNameUsed,
+            password: byId("new-pass").value,
+            name: byId("new-name").value,
+            phone: byId("new-phone").value
+        }
+
+        var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }
+
+        fetch('/register', payload)
+            .then(res => res.json())
+            .then(res => {
+                console.log('Yes, sign up success', res);
+
+                if (res['success']) {
+                    location.reload();
+                } else {
+                    alert("CREATE NEW Accout Failed, ask Priyam or Pranshu")
+                }
+
+            })
+            .catch(err => {
+                console.log("Error came in new user api");
+
+            }).finally(val => {
+                byId("loading-anim-newuser").visibility = "hidden";
+            })
+
+
+        console.log("Submitted!");
+    }
+
+    byId("newuser-container").onsubmit = tryNewAccount;
+
+    byId("create-btn").onclick = tryNewAccount;
+</script>
+
+{% endblock %}
