@@ -1,0 +1,180 @@
+{% extends 'layouts/base.html' %}
+
+{% block css %}
+<style>
+    #header {
+        margin-bottom: 24px;
+        display: flex;
+        flex-flow: row;
+    }
+
+    .right {
+        margin-left: auto;
+    }
+
+    @media (max-width: 600px) {
+        #header {
+            display: block;
+        }
+
+        #dash-btn {
+            margin: 0 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+
+
+  <div id="add_item">
+    <div id="add_item_heading">
+        <h4>Please enter the details for the item</h4>
+    </div>
+   
+   <div class="row">
+
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                <i class="material-icons prefix">account_circle</i>
+                <input id="add-input-name" type="text" class="validate">
+                <label for="add-input-name">First Name</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">phone</i>
+                    <input id="add-input-contact" type="tel" class="validate">
+                    <label for="add-input-contact">Telephone</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-7 s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                    <i class="material-icons prefix">dashboard customize</i>
+                    <input type="text" id="add-autocomplete-input-item" class="autocomplete">
+                    <label for="add-autocomplete-input-item">Item</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-5 s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                    <i class="material-icons prefix">tag</i>
+                    <input type="number" id="add-autocomplete-input-quantity" class="autocomplete">
+                    <label for="add-autocomplete-input-quantity">Quantity</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                <i class="material-icons prefix">map</i>
+                <input type="text" id="add-autocomplete-input-state" class="autocomplete">
+                <label for="add-autocomplete-input-state">State</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                <i class="material-icons prefix">location_on</i>
+                <input type="text" id="add-autocomplete-input-city" class="autocomplete">
+                <label for="add-autocomplete-input-city">City</label>
+                </div>
+            </div>
+        </div>
+
+        
+
+        
+    </div>
+    <a class="waves-effect waves-light btn" >Add</a>
+
+    
+
+  </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        
+        
+        // for the POST request
+        var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+        // Populating the name and telephone details with the logged in user's details, can be changed though.
+        fetch('/user_info', payload)
+        .then(res => res.json())
+        .then(res => {
+            const user_info = res['user_info'];
+            document.getElementById('add-input-name').value = user_info['name'];
+            document.getElementById('add-input-contact').value = user_info['contact'];
+            $(document).ready(function() {
+                M.updateTextFields();
+            });
+        })
+        .catch(err => {
+            console.log("Error came in quizzes api");
+        });
+
+        $(document).ready(function(){
+            $('#add-autocomplete-input-state').autocomplete({
+            data: give_states(),
+            });
+
+            $('#add-autocomplete-input-item').autocomplete({
+            data: {"Oxygen Cylinder": null,
+                    "Plasma":null,
+                    "Oxygen Concentrator":null,
+                    "Hospital Beds":null,
+                    "Plasma A+":null,
+                    "Plasma AB+":null,
+                    "Plasma B+":null,
+                    "Plasma O+":null,
+                    "Plasma A-":null,
+                    "Plasma AB-":null,
+                    "Plasma O-":null,
+            },
+            });
+
+            $("#add-autocomplete-input-state").on("change keyup paste click", function(){
+                $('#add-autocomplete-input-city').autocomplete({
+                    data: find_cities(document.getElementById('add-autocomplete-input-state').value),
+                });
+            });
+
+
+
+        });
+
+        
+
+
+        
+
+    
+
+    </script>
+
+
+
+
+{% endblock %}

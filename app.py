@@ -23,8 +23,17 @@ app = Flask(__name__)
 app.secret_key = 'some_secret'
 
 
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('login_register'))
+    return wrap
 
-def is_user_id_valid(uid='pranshuid'):
+
+def is_user_id_valid(uid):
     # Return True or False depending on if the username is valid or not
     # Does NOT check if the username already exists or not
 
@@ -45,6 +54,28 @@ def give_favicon():
 def find():
     return render_template('find.html')
 
+
+@app.route('/add')
+@is_logged_in
+def add():
+    return render_template('add.html')
+
+
+@app.route('/user_info', methods=['GET', 'POST'])
+@is_logged_in
+def user_info():
+    user_info = db.collection(u'users').document(session['username']).get()
+
+    if user_info.exists:
+        print("User exists")
+        resDict = {
+            "name": user_info.get('name'),
+            "contact": user_info.get('phone'),
+        }
+        return jsonify(success=True, user_info=resDict)
+    else:
+        print("User doesn't exists")
+        return jsonify(success=False, err_code='1')
 
 
 @app.route('/login', methods=['GET', 'POST'])
