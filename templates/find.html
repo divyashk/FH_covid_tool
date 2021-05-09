@@ -236,17 +236,17 @@
 
         // Find the data from the UI
 
-        // data = {
-        //     item: 'oxygen cylinder',
-        //     state: 'uttar pradesh',
-        //     city: 'ghaziabad',
-        // }
-
         data = {
-            item: byId("autocomplete-input-item").value,
-            state: byId("autocomplete-input-state").value,
-            city: byId("autocomplete-input-city").value,
+             item: 'oxygen cylinder',
+             state: 'uttar pradesh',
+             city: 'ghaziabad',
         }
+
+        // data = {
+        //     item: byId("autocomplete-input-item").value,
+        //     state: byId("autocomplete-input-state").value,
+        //     city: byId("autocomplete-input-city").value,
+        // }
 
         globalCity = data.city;
         globalItem = data.item;
@@ -302,7 +302,8 @@
                         <div class="card horizontal">                      
                             <div class="card-stacked">
                                 <div class="card-content">
-                                    <div class="card-head"> ` + val.username + ` </div>
+                                    <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
+                                    <p>` + val.name + `</p>
                                     <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
                                 </div>
                                 <div class="card-action">
