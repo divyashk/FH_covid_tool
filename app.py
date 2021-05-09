@@ -115,6 +115,7 @@ def vote():
     state = data['state']
     cur_status = data['cur_status']
     net_upvotes = data['net_upvotes']
+
     ndata = {'votes' : {username : change_to} , 'net_upvotes' : net_upvotes + change_to - cur_status}
     db.collection("Inventory").document(item).collection(state).document(city).collection("leads").document(leadId).set(ndata , merge=True)
     return jsonify(success=True)
