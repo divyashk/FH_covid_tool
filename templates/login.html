@@ -1,14 +1,14 @@
 {% extends 'layouts/base.html' %}
 
 {% block title %}
-<title>Login | Quiz IIT Mandi</title>
+<title>Login</title>
 {% endblock %}
 
 {% block css %}
 <style>
     #main {
         display: flex;
-        height: 90vh;
+        height: 50vh;
         justify-content: center;
         align-items: center;
     }
@@ -16,6 +16,7 @@
     #login-container,
     #password-container {
         max-width: 400px;
+        
     }
 
     #next-btn,
@@ -48,22 +49,15 @@
 {% endblock %}
 
 {% block body %}
-<!-- Part Quizes with the link to go to them or something of that kind -->
-<!-- A button on the right through which one can create -->
+
 
 <div id="main">
     <form id="login-container" class="card darken-1">
         <div class="card-content">
-            <span class="card-title">Quiz Platform Login/Register</span>
-            <p>I am a very simple quiz creating platform. I am good at containing small bits of information.</p>
+            <span class="card-title">Login/Register to continue</span>
+            <p>Either enter your registered username or enter a new one and registration will follow<p>
 
-            <!-- <div id="un-input" class="input-field col s6">
-                    <i class="material-icons prefix">account_circle</i>
-                    <input id="un" type="text" class="validate">
-                    <label for="icon_prefix">Enter Your UserName</label>
-                </div> -->
-
-            <div id="un-input" class="input-field col s6">
+        <div id="un-input" class="input-field col s6">
                 <i class="material-icons prefix">account_circle</i>
                 <input placeholder="Enter your UserName" id="un" type="text" class="validate">
                 <label for="un">UserName</label>
@@ -346,7 +340,7 @@
                 if (res['success']) {
                     location.reload();
                 } else {
-                    alert("CREATE NEW Accout Failed, ask Priyam or Pranshu")
+                    alert("CREATE NEW Accout Failed!")
                 }
 
             })

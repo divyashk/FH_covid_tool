@@ -46,6 +46,12 @@ def is_user_id_valid(uid):
 """
 APIs
 """
+@app.route("/if_logged_in",methods=["POST"])
+def if_logged_in():
+    if 'logged_in' in session:
+         return jsonify(success=True)
+    else:
+        return jsonify(success=False)
 
 @app.route('/add_item_api', methods=['POST'])
 @is_logged_in
@@ -177,7 +183,6 @@ def user_info():
         print("User doesn't exists")
         return jsonify(success=False, err_code='1')
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login_register():
     '''
@@ -210,7 +215,7 @@ def login_register():
 def logout():
     session["logged_in"] = False
     session.clear()
-    return redirect(url_for('login_register'))
+    return redirect(url_for('find'))
 
 @app.route('/register', methods=['POST'])
 def register_user():
