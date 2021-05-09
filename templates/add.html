@@ -132,7 +132,7 @@
             });
         })
         .catch(err => {
-            console.log("Error came in quizzes api");
+            console.log("Error came in api");
         });
         var inp_state = $('#add-autocomplete-input-state');
         var inp_city = $('#add-autocomplete-input-city');
@@ -163,7 +163,7 @@
 
             inp_state.on("change keyup paste", function(){
                 $('#add-autocomplete-input-city').autocomplete({
-                    data: find_cities(document.getElementById('add-autocomplete-input-state').value),
+                    data: find_cities(document.getElementById('add-autocomplete-input-state').value.toLowerCase()),
                 });
             });
             // checking if the state-input is correct at input
@@ -212,7 +212,7 @@
                     document.getElementById('add-autocomplete-input-quantity').classList.remove('invalid');
                    
                 }
-            });
+            }); 
 
 
 
