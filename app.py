@@ -5,6 +5,7 @@ from functools import wraps
 import os
 import time
 import math 
+import datetime
 
 import firebase_admin
 from firebase_admin import credentials
@@ -123,13 +124,11 @@ def vote():
     leadId = data['leadId']
     cur_status = data['cur_status']
     net_upvotes = data['net_upvotes']
-    print(leadId)
     address = db.collection("references").document(leadId).get().to_dict()["address"]
     address = address.split("/")
-    print(address)
-    doc = db.collection("Inventory").document(address[2]).collection(address[3]).document(address[4]).collection("leads").document(leadId).get().to_dict()
+    doc = db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).get().to_dict()
     ndata = {'votes' : {username : change_to} , 'net_upvotes' : net_upvotes + change_to - cur_status , 'weight' : doc["weight"] + (change_to - cur_status)*(weight(time.time() - doc["time"]))}
-    db.collection("Inventory").document(address[2]).collection(address[3]).document(address[4]).collection("leads").document(leadId).set(ndata , merge=True)
+    db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).set(ndata , merge=True)
     return jsonify(success=True)
 
 @app.route('/delete_lead_api', methods=['POST'])
@@ -167,6 +166,24 @@ def check_if_username_exists():
 
     else:
         return jsonify(success=False, err_code='0')
+
+@app.route('/add_comment', methods=['POST'])
+@is_logged_in
+def add_comment():
+    data = request.json
+    leadId = data['leadId']
+    username = session['username']
+    comment = data['comment']
+    address = db.collection("references").document(leadId).get().to_dict()["address"]
+    iaddress = address.split("/")
+    db.collection("Inventory").document(iaddress[1]).collection(iaddress[2]).document(iaddress[3]).collection("leads").document(leadId).set({
+        "comments" : firestore.ArrayUnion([{
+            "comment" : comment , 
+            "poster" : username , 
+            "time" : datetime.datetime.now()
+        }])
+    } , merge = True)
+    return jsonify(success=True)
 
 """
 Routes
@@ -286,6 +303,10 @@ def testvote():
 @app.route('/testdelete')
 def testdelete():
     return render_template('testdelete.html')
+
+@app.route('/testcomment')
+def testcomment():
+    return render_template('testcomment.html')
 
 """
 Main 
