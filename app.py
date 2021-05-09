@@ -45,8 +45,8 @@ def is_user_id_valid(uid):
 @app.route('/add_item_api', methods=['POST'])
 @is_logged_in
 def add_item_api():
-
     data = request.json
+    username = session['username']
     data['username'] = session['username']
     data['votes'] = {}
     data['net_upvotes'] = 0
@@ -58,26 +58,27 @@ def add_item_api():
         if field not in data:
             return jsonify(success=False, err_code='1', msg=field + ' not passed')
 
-        # Adding the item into the database
-        db.collection("Inventory").document(data['item']).collection(
-            data['state']).document(data['city']).collection("leads").add(data)
+    # Adding the item into the database
+    doc_ref = db.collection("Inventory").document(data['item']).collection(
+        data['state']).document(data['city']).collection("leads").document()
+    doc_ref.set(data)
 
-        # Also updating the list of available cities in a state
-        doc = db.collection("states").document(data['state']).get()
-        if doc.exists:
-            fields = doc.to_dict()
-            # only if the city is not added to the set of cities for this state
-            if data['city'] not in fields['cities']:
-                fields['cities'].append(data['city'])
-                db.collection("states").document(data['state']).set(fields)
-        else:
-            # creating the new doc for the state
-            dict = {"cities": [data["city"]]}
-            db.collection("states").document(data['state']).set(dict)
+    db.collection("users").document(username).update({"leads" : firestore.ArrayUnion([doc_ref.path])})
 
-        return jsonify(success=True)
+    # Also updating the list of available cities in a state
+    doc = db.collection("states").document(data['state']).get()
+    if doc.exists:
+        fields = doc.to_dict()
+        # only if the city is not added to the set of cities for this state
+        if data['city'] not in fields['cities']:
+            fields['cities'].append(data['city'])
+            db.collection("states").document(data['state']).set(fields)
     else:
-        return jsonify(success=False, err_code='0')
+        # creating the new doc for the state
+        dict = {"cities": [data["city"]]}
+        db.collection("states").document(data['state']).set(dict)
+
+    return jsonify(success=True)
 
 @app.route('/get_leads_api', methods=['POST'])
 def get_leads_api():
