@@ -49,6 +49,9 @@ def add_item_api():
 
     data = request.json
     data['username'] = session['username']
+    data['downvotes'] = []
+    data['upvotes'] = []
+    data['net_upvotes'] = 0
     compulsary_items = ["username",    "name", "contact",
                         "item", "quantity", "city", "state"]
 
@@ -87,7 +90,6 @@ def give_favicon():
 @app.route('/find')
 def find():
     return render_template('find.html')
-
 
 @app.route('/add')
 @is_logged_in
