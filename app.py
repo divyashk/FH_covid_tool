@@ -82,11 +82,8 @@ def add_item_api():
         return jsonify(success=False, err_code='0')
 
 @app.route('/get_leads_api', methods=['POST'])
-@is_logged_in
 def get_leads_api():
-
     data = request.json
-    username = session['username']
     state = data['state']
     city = data['city']    
     item = data['item']
@@ -97,8 +94,8 @@ def get_leads_api():
         doc = doc.to_dict()
         lisp.append(doc)
     lisp = sorted(lisp , key = lambda i : (-i['net_upvotes'] , -i['quantity']))
-    print(username)
-    if username:
+    if "username" in session:
+        username = session['username']
         for dt in lisp:
             dt['status'] = 0
             if username in dt['upvotes']:
@@ -106,6 +103,7 @@ def get_leads_api():
             elif username in dt['downvotes']:
                 dt['status'] = -1
     # data = {"data" : lisp}
+    
     return jsonify(success=True , data=lisp)
         # return jsonify(success=False, err_code='0')
 
