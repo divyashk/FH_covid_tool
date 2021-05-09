@@ -3,6 +3,8 @@ import utility
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os
+import time
+import math 
 
 import firebase_admin
 from firebase_admin import credentials
@@ -43,6 +45,9 @@ def is_user_id_valid(uid):
 
     return True
 
+def weight(i):
+    return 5*max(1 , math.log2(i/3600))
+
 """
 APIs
 """
@@ -62,6 +67,8 @@ def add_item_api():
     data['votes'] = {}
     data['net_upvotes'] = 0
     data['quantity'] = int(data['quantity'])
+    data['time'] = int(time.time())
+    data['weight'] = 0
     compulsary_items = ["username",    "name", "contact",
                         "item", "quantity", "city", "state"]
 
@@ -116,11 +123,13 @@ def vote():
     leadId = data['leadId']
     cur_status = data['cur_status']
     net_upvotes = data['net_upvotes']
-
+    print(leadId)
     address = db.collection("references").document(leadId).get().to_dict()["address"]
     address = address.split("/")
-    ndata = {'votes' : {username : change_to} , 'net_upvotes' : net_upvotes + change_to - cur_status}
-    db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).set(ndata , merge=True)
+    print(address)
+    doc = db.collection("Inventory").document(address[2]).collection(address[3]).document(address[4]).collection("leads").document(leadId).get().to_dict()
+    ndata = {'votes' : {username : change_to} , 'net_upvotes' : net_upvotes + change_to - cur_status , 'weight' : doc["weight"] + (change_to - cur_status)*(weight(time.time() - doc["time"]))}
+    db.collection("Inventory").document(address[2]).collection(address[3]).document(address[4]).collection("leads").document(leadId).set(ndata , merge=True)
     return jsonify(success=True)
 
 @app.route('/delete_lead_api', methods=['POST'])
