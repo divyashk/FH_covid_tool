@@ -83,7 +83,7 @@ def add_item_api():
 
 @app.route('/favicon.ico')
 def give_favicon():
-    return send_file('static/quiz.svg')
+    return send_file('static/download.png')
 
 
 @app.route('/')
