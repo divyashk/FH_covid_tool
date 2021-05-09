@@ -26,65 +26,166 @@
 
 {% block body %}
 
-<div id="find_loc" class="d-flex w-50">
-    <div id="find_loc_heading">
-        <h4>Enter your requirements</h4>
-    </div>
+<div id="main" class="container">
 
-    <div class="row">
-        <div class="col s12">
+    <div id="find_loc" class="d-flex w-50">
+        <div id="find_loc_heading">
+            <h4>Enter your requirements</h4>
+        </div>
+
         <div class="row">
-            <div class="input-field col s12">
-            <i class="material-icons prefix">dashboard customize</i>
-            <input type="text" id="autocomplete-input-item" class="autocomplete">
-            <label for="autocomplete-input-item">Item</label>
-            </div>
-        </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col s12">
-            <div class="row">
-                <div class="input-field col s12">
-                <i class="material-icons prefix">map</i>
-                <input type="text" id="autocomplete-input-state" class="autocomplete">
-                <label for="autocomplete-input-state">State</label>
+            <div class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">dashboard customize</i>
+                        <input type="text" id="autocomplete-input-item" class="autocomplete">
+                        <label for="autocomplete-input-item">Item</label>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col s12">
-            <div class="row">
-                <div class="input-field col s12">
-                <i class="material-icons prefix">location_on</i>
-                <input type="text" id="autocomplete-input-city" class="autocomplete">
-                <label for="autocomplete-input-city">City</label>
+        <div class="row">
+            <div class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">map</i>
+                        <input type="text" id="autocomplete-input-state" class="autocomplete">
+                        <label for="autocomplete-input-state">State</label>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <a class="waves-effect waves-light btn">Find</a>
+        <div class="row">
+            <div class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">location_on</i>
+                        <input type="text" id="autocomplete-input-city" class="autocomplete">
+                        <label for="autocomplete-input-city">City</label>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-</div>
+        <div id="loading-anim" style="text-align: center; display: none;">
+            <div class="preloader-wrapper small active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a id="find-btn" class="waves-effect waves-light btn">Find</a>
+    </div> <!-- End of find loc -->
+
+    <div id="leads-show" class="row"></div>
+
+</div> <!-- End of main -->
+
 
 {% endblock %}
 
 {% block js %}
 
 <script>
-    
-    $(document).ready(function(){
+
+    $(document).ready(function () {
         $('#autocomplete-input-city').autocomplete({
-        data: {
-            "Apple": null,
-            "Microsoft": null,
-            "Google": 'https://placehold.it/250x250'
-        },
+            data: {
+                "Apple": null,
+                "Microsoft": null,
+                "Google": 'https://placehold.it/250x250'
+            },
         });
+    });
+
+    // After clicking the find button
+    $("#find-btn").on("click", (e) => {
+        console.log("FInd button clicked", e);
+
+        data = {
+            item: 'oxygen cylinder',
+            state: 'uttar pradesh',
+            city: 'ghaziabad',
+        }
+
+        let payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }
+
+        $("#loading-anim").css("display", "block");
+        $("#find-btn").css("display", "none");
+        fetch('/get_leads_api', payload)
+            .then(res => res.json())
+            .then(res => {
+                console.log('Get leads success', res);
+                if (res['success']) {
+                    console.log("successful request")
+                    // JSON.stringify(res['data'])
+
+                    
+                    let toAdd = `
+                    <div class="col s12 m6">
+                        <div class="card horizontal">                      
+                            <div class="card-stacked">
+                                <div class="card-content">
+                                    <p>I am a very simpl</p>
+                                </div>
+                                <div class="card-action">
+                                    <a href="#">This is a link</a>
+                                </div>
+                            </div>
+                            <div class="right-row">
+                                <div class="upvote">
+                                    <span class="material-icons">
+                                        expand_less
+                                    </span>
+                                </div>
+
+                                <div class="up-vote-count">
+                                    78
+                                </div>
+
+                                <div class="downvote">
+                                    <span class="material-icons">
+                                        expand_more
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+
+                    $("#leads-show").append(toAdd);
+
+                    console.log(res["data"]);
+                } else {
+                    console.log("Success didn't came from server");
+                }
+            })
+            .catch(err => {
+                console.log("Error in get_leads_api");
+            }).finally(() => {
+                $("#loading-anim").css("display", "none");
+                $("#find-btn").css("display", "block");
+            });
+
+        console.log("Submitted!");
+
     });
 
 </script>

@@ -20,7 +20,6 @@ app = Flask(__name__)
 
 app.secret_key = 'some_secret'
 
-
 def is_logged_in(f):
     @wraps(f)
     def wrap(*args, **kwargs):
