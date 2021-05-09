@@ -20,3 +20,40 @@
 nav{
     background-color: #26a69a;
 }
+.right-row {
+    min-width: 40px;
+    text-align: center;
+    min-height: 92px;
+    display: flex;
+    flex-direction: column;
+    flex-flow: column;
+    margin-left: auto;
+    background: #eee;
+}
+
+.card-horiz {
+    display: flex;
+    flex-flow: row;
+}
+
+.upvote, .downvote {
+    margin: auto;
+    cursor: pointer;
+    display: flex;
+}
+
+.upvote .material-icons, .downvote .material-icons {
+    font-size: 32px;
+}
+
+.upvote:hover, .downvote:hover {
+    transform: scale(1.1);
+}
+
+.color-green {
+    color: #07ff07;
+}
+
+.color-red {
+    color: red;
+}
