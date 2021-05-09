@@ -99,6 +99,8 @@
 
 <script>
 
+    const username = "{{ username }}";
+
     $(document).ready(function () {
         $('#autocomplete-input-city').autocomplete({
             data: {
@@ -131,6 +133,7 @@
                 leads.push(doc.data());
             });
 
+            // Comparotor function
             leads.sort((a, b) => {
                 if(a.net_upvotes > b.net_upvotes) return -1;
                 if(a.net_upvotes < b.net_upvotes) return 1;
@@ -143,6 +146,17 @@
     
             let toAdd = "";
             leads.forEach(val => {
+
+                var upVoteClass = "";
+                var downVoteClass = "";
+                
+                if(username) {
+                    console.log("username found", username);
+
+                    var myVote = val.votes[username];
+                    if(myVote && myVote == 1) upVoteClass = "color-green";
+                    if(myVote && myVote == -1) downVoteClass = "color-red";  
+                }
 
                 toAdd += `
                     <div class="col s12 m6">
@@ -157,7 +171,7 @@
                             </div>
                             <div class="right-row">
                                 <div class="upvote">
-                                    <span class="material-icons">
+                                    <span class="material-icons ` + upVoteClass + `">
                                         expand_less
                                     </span>
                                 </div>
@@ -167,7 +181,7 @@
                                  </div>
 
                                 <div class="downvote">
-                                    <span class="material-icons">
+                                    <span class="material-icons ` + downVoteClass + `">
                                         expand_more
                                     </span>
                                 </div>

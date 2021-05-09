@@ -46,3 +46,11 @@
 .upvote:hover, .downvote:hover {
     transform: scale(1.1);
 }
+
+.color-green {
+    color: #07ff07;
+}
+
+.color-red {
+    color: red;
+}

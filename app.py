@@ -126,7 +126,12 @@ def give_favicon():
 @app.route('/')
 @app.route('/find')
 def find():
-    return render_template('find.html')
+    username = ""
+
+    if ("username" in session):
+        username = session["username"]
+
+    return render_template('find.html', username=username)
 
 @app.route('/testfind')
 def testfind():
