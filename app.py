@@ -241,6 +241,19 @@ def add_comment():
     } , merge = True)
     return jsonify(success=True)
 
+@app.route('/get_states', methods=['POST'])
+def get_states():
+    """
+    This nees the item and it finds all the subcollections
+    """
+
+    collections = db.collection("Inventory").document(request.json["item"]).collections()
+    for collection in collections:
+        for doc in collection.stream():
+            print(f'{doc.id} => {doc.to_dict()}')
+
+    return jsonify(success=True)
+
 """
 Routes
 """

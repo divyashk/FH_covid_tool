@@ -36,9 +36,10 @@
             <div class="col s12">
                 <div class="row">
                     <div class="input-field col s12">
-                        <i class="material-icons prefix">dashboard_customize</i>
-                        <input type="text" id="autocomplete-input-item" class="autocomplete">
-                        <label for="autocomplete-input-item">Item</label>
+                        <i class="material-icons prefix">dashboard customize</i>
+                        <select id="autocomplete-input-item">
+                            <option value="" disabled selected>Choose Item</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -49,8 +50,12 @@
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="material-icons prefix">map</i>
-                        <input type="text" id="autocomplete-input-state" class="autocomplete">
-                        <label for="autocomplete-input-state">State</label>
+                        <select id="autocomplete-input-state">
+                            <option value="" disabled selected>Choose State</option>
+                            <option value="1">Option 1</option>
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -61,8 +66,12 @@
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="material-icons prefix">location_on</i>
-                        <input type="text" id="autocomplete-input-city" class="autocomplete">
-                        <label for="autocomplete-input-city">City</label>
+                        <select id="autocomplete-input-city">
+                            <option value="" disabled selected>Choose City</option>
+                            <option value="1">Option 1</option>
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -104,6 +113,9 @@
     var globalState = "";
     var globalItem = "";
 
+    const byId = (id) => { return document.getElementById(id); }
+    const db = firebase.firestore();
+
     $(document).ready(function () {
         $('#autocomplete-input-city').autocomplete({
             data: {
@@ -112,6 +124,57 @@
                 "Google": null
             },
         });
+
+        $('select').formSelect();
+
+        $('select').on('contentChanged', function () {
+            $(this).formSelect();
+        });
+
+
+        $("#autocomplete-input-item").on('change', function () {
+            const itemSelected = $(this).val();
+
+            // We need to find the number of subcollections from python
+            const data = { item: itemSelected };
+
+            fetch('/get_states', {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+
+        db.collection("Inventory").get()
+            .then((querySnapshot) => {
+
+                console.log("Query snapshot of inventory");
+                // Loop in each query snapshot and add options in autocomplete-input-item
+
+                var optionsToAdd = "";
+
+                querySnapshot.forEach((doc) => {
+                    // console.log(doc.id, " => ", doc.data());
+                    optionsToAdd += "<option value=\"" + doc.id + "\"> " + doc.id + " </option>"
+                });
+
+                // Now update the options
+                $("#autocomplete-input-item").append(optionsToAdd);
+                $("#autocomplete-input-item").trigger('contentChanged');
+            })
+            .catch((err) => {
+                console.log("Error came while fetching data", err);
+            });
+
     });
 
     handleVote = (leadIndex, toSet) => {
@@ -173,10 +236,16 @@
 
         // Find the data from the UI
 
+        // data = {
+        //     item: 'oxygen cylinder',
+        //     state: 'uttar pradesh',
+        //     city: 'ghaziabad',
+        // }
+
         data = {
-            item: 'oxygen cylinder',
-            state: 'uttar pradesh',
-            city: 'ghaziabad',
+            item: byId("autocomplete-input-item").value,
+            state: byId("autocomplete-input-state").value,
+            city: byId("autocomplete-input-city").value,
         }
 
         globalCity = data.city;
@@ -186,7 +255,6 @@
         $("#loading-anim").css("display", "block");
         $("#find-btn").css("display", "none");
 
-        const db = firebase.firestore();
         const ldRef = db.collection("Inventory").doc(data.item).collection(data.state).doc(data.city).collection("leads");
 
         ldRef.onSnapshot((querySnapshot) => {
@@ -199,8 +267,8 @@
 
             // Comparotor function
             leads.sort((a, b) => {
-                if (a.net_upvotes > b.net_upvotes) return -1;
-                if (a.net_upvotes < b.net_upvotes) return 1;
+                if (a.weight > b.weight) return -1;
+                if (a.weight < b.weight) return 1;
                 return 0;
             });
 
@@ -234,8 +302,7 @@
                         <div class="card horizontal">                      
                             <div class="card-stacked">
                                 <div class="card-content">
-                                    <div class="card-head"> ` + val.item  + ` </div>
-                                    <p>` + val.name + `</p>
+                                    <div class="card-head"> ` + val.username + ` </div>
                                     <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
                                 </div>
                                 <div class="card-action">
