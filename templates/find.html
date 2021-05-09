@@ -87,63 +87,9 @@
                 });
             });
 
-            // Now making a post request
-            var payload = {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }
+          
 
-            fetch('/', payload)
-                .then(res => res.json())
-                .then(res => {
-                    
-                    const dataDict = res['quizData'];
-
-                    const quizzesRow = document.querySelector('#quizzes-row');
-                    quizzesRow.innerHTML = '';
-                    quizzesRow.classList.remove('center-align')
-
-                    for (const quiz of dataDict) {
-                        if (quiz.homepage) {
-                            let quizDesc = `<p>Increase your knowledge and have fun taking part in this Quiz organised by IIT Mandi students.</p>`;
-                            if (quiz.quizDesc) {
-                                quizDesc = quiz.quizDesc;
-                            }
-
-                            let quizImg = `https://quiziit.ml/posters/political.jpg`;
-                            if (quiz.quizImg) {
-                                quizImg = quiz.quizImg;
-                            }
-
-                            quizzesRow.innerHTML +=
-                                `
-                            <div class="col s12 m6">
-                                <div class="card horizontal">
-                                    <div class="card-image">
-                                        <img class="poster-img" src="` + quizImg + `">
-                                    </div>
-                                    <div class="card-stacked">
-                                        <div class="card-content">
-                                            <span class="card-title">` + quiz.quizName + `</span>
-                                            ` + quizDesc + `
-                                        </div>
-                                        <div class="card-action">
-                                            <a href="` + quiz.qid + `">Visit</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                `;
-                        }
-
-                    }
-
-                })
-                .catch(err => {
-                    console.log("Error came in quizzes api");
-                })
-
+            
         
         </script>
 

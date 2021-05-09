@@ -7,17 +7,17 @@ with open('old_cities.json') as f:
 # state_prev = data[0]["state"]
 new_data = {}
 for itr in data:
-
+    itr['state'] = itr['state'].lower()
     if itr['state'] in new_data:
-        new_data[itr['state']][itr['name']] = None
+        new_data[itr['state']][itr['name'].lower()] = None
     else:
         new_data[itr['state']] = {}
-        new_data[itr['state']][itr['name']] = None
+        new_data[itr['state'].lower()][itr['name'].lower()] = None
 
 
 states = {}
 for itr in new_data:
-    states[itr] = None
+    states[itr.lower()] = None
 print(states)
 
 with open('states.json', 'w') as json_file1:

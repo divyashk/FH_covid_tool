@@ -13,7 +13,6 @@ from passlib.hash import sha256_crypt
 import re
 
 
-
 cred = credentials.Certificate('creds.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -42,6 +41,41 @@ def is_user_id_valid(uid):
         return False
 
     return True
+
+
+@app.route('/add_item_api', methods=['POST',    'GET'])
+@is_logged_in
+def add_item_api():
+
+    data = request.json
+    data['username'] = session['username']
+    compulsary_items = ["username",    "name", "contact",
+                        "item", "quantity", "city", "state"]
+
+    for field in compulsary_items:
+        if field not in data:
+            return jsonify(success=False, err_code='1', msg=field + ' not passed')
+
+        # Adding the item into the database
+        db.collection("Inventory").document(data['item']).collection(
+            data['state']).document(data['city']).collection("leads").add(data)
+
+        # Also updating the list of available cities in a state
+        doc = db.collection("states").document(data['state']).get()
+        if doc.exists:
+            fields = doc.to_dict()
+            # only if the city is not added to the set of cities for this state
+            if data['city'] not in fields['cities']:
+                fields['cities'].append(data['city'])
+                db.collection("states").document(data['state']).set(fields)
+        else:
+            # creating the new doc for the state
+            dict = {"cities": [data["city"]]}
+            db.collection("states").document(data['state']).set(dict)
+
+        return jsonify(success=True)
+    else:
+        return jsonify(success=False, err_code='0')
 
 
 @app.route('/favicon.ico')
@@ -136,8 +170,6 @@ def register_user():
         # User id is valid, go ahead
         data['password'] = sha256_crypt.encrypt(str(data['password']))
 
-        # TODO add a security that the user already doesn't exist!
-
         # Update the user in the database
         db.collection("users").document(data['username']).set(data, merge=True)
 
@@ -169,8 +201,6 @@ def check_if_username_exists():
 
     else:
         return jsonify(success=False, err_code='0')
-
-
 
 
 if __name__ == '__main__':
