@@ -12,7 +12,6 @@ import threading
 from passlib.hash import sha256_crypt
 import re
 
-
 cred = credentials.Certificate('creds.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -49,8 +48,7 @@ def add_item_api():
 
     data = request.json
     data['username'] = session['username']
-    data['downvotes'] = []
-    data['upvotes'] = []
+    data['votes'] = {}
     data['net_upvotes'] = 0
     data['quantity'] = int(data['quantity'])
     compulsary_items = ["username",    "name", "contact",
@@ -91,27 +89,40 @@ def get_leads_api():
     docs = db.collection("Inventory").document(item).collection(state).document(city).collection("leads").stream()
     lisp = []
     for doc in docs:
-        doc = doc.to_dict()
-        lisp.append(doc)
+        tdoc = doc.to_dict()
+        tdoc['leadId'] = doc.id
+        lisp.append(tdoc)
     lisp = sorted(lisp , key = lambda i : (-i['net_upvotes'] , -i['quantity']))
     if "username" in session:
         username = session['username']
         for dt in lisp:
             dt['status'] = 0
-            if username in dt['upvotes']:
-                dt['status'] = 1
-            elif username in dt['downvotes']:
-                dt['status'] = -1
+            if username in dt['votes']:
+                dt['status'] = dt['votes'][username]
     # data = {"data" : lisp}
     
     return jsonify(success=True , data=lisp)
         # return jsonify(success=False, err_code='0')
 
+@app.route('/vote_api', methods=['POST'])
+@is_logged_in
+def vote():
+    data = request.json
+    change_to = data['change_to']
+    username = session['username']
+    leadId = data['leadId']
+    item = data['item']
+    city = data['city']
+    state = data['state']
+    cur_status = data['cur_status']
+    net_upvotes = data['net_upvotes']
+    ndata = {'votes' : {username : change_to} , 'net_upvotes' : net_upvotes + change_to - cur_status}
+    db.collection("Inventory").document(item).collection(state).document(city).collection("leads").document(leadId).set(ndata , merge=True)
+    return jsonify(success=True)
 
 @app.route('/favicon.ico')
 def give_favicon():
     return send_file('static/download.png')
-
 
 @app.route('/')
 @app.route('/find')
@@ -122,11 +133,14 @@ def find():
 def testfind():
     return render_template('testfind.html')
 
+@app.route('/testvote')
+def testvote():
+    return render_template('testvote.html')
+
 @app.route('/add')
 @is_logged_in
 def add():
     return render_template('add.html')
-
 
 @app.route('/user_info', methods=['GET', 'POST'])
 @is_logged_in
@@ -172,7 +186,6 @@ def login_register():
             return jsonify(success=True)
         else:
             return jsonify(success=False)
-
 
 @app.route('/logout')
 def logout():
