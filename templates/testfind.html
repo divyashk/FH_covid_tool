@@ -1,0 +1,34 @@
+hello world
+<div id = "text"> </div>
+{% block js %}
+    <script>
+    data = {
+        item : 'oxygen cylinder',
+        state : 'uttar pradesh',
+        city : 'ghaziabad',
+    }
+    var payload = {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    }
+
+    fetch('/get_leads_api', payload)
+        .then(res => res.json())
+        .then(res => {
+            console.log('Get leads success', res);
+            if (res['success']) {
+                console.log("successful request")
+                document.getElementById("text").innerHTML = JSON.stringify(res['data'])
+            }
+        })
+        .catch(err => {
+            console.log("Error in get_leads_api");
+        });
+    console.log("Submitted!");
+    
+    </script>
+
+{% endblock %}

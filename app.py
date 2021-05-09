@@ -43,7 +43,7 @@ def is_user_id_valid(uid):
     return True
 
 
-@app.route('/add_item_api', methods=['POST',    'GET'])
+@app.route('/add_item_api', methods=['POST'])
 @is_logged_in
 def add_item_api():
 
@@ -52,6 +52,7 @@ def add_item_api():
     data['downvotes'] = []
     data['upvotes'] = []
     data['net_upvotes'] = 0
+    data['quantity'] = int(data['quantity'])
     compulsary_items = ["username",    "name", "contact",
                         "item", "quantity", "city", "state"]
 
@@ -80,6 +81,34 @@ def add_item_api():
     else:
         return jsonify(success=False, err_code='0')
 
+@app.route('/get_leads_api', methods=['POST'])
+@is_logged_in
+def get_leads_api():
+
+    data = request.json
+    username = session['username']
+    state = data['state']
+    city = data['city']    
+    item = data['item']
+
+    docs = db.collection("Inventory").document(item).collection(state).document(city).collection("leads").stream()
+    lisp = []
+    for doc in docs:
+        doc = doc.to_dict()
+        lisp.append(doc)
+    lisp = sorted(lisp , key = lambda i : (-i['net_upvotes'] , -i['quantity']))
+    print(username)
+    if username:
+        for dt in lisp:
+            dt['status'] = 0
+            if username in dt['upvotes']:
+                dt['status'] = 1
+            elif username in dt['downvotes']:
+                dt['status'] = -1
+    # data = {"data" : lisp}
+    return jsonify(success=True , data=lisp)
+        # return jsonify(success=False, err_code='0')
+
 
 @app.route('/favicon.ico')
 def give_favicon():
@@ -90,6 +119,10 @@ def give_favicon():
 @app.route('/find')
 def find():
     return render_template('find.html')
+
+@app.route('/testfind')
+def testfind():
+    return render_template('testfind.html')
 
 @app.route('/add')
 @is_logged_in
