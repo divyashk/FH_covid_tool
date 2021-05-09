@@ -12,14 +12,18 @@ import threading
 from passlib.hash import sha256_crypt
 import re
 
+"""
+Init 
+"""
 cred = credentials.Certificate('creds.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-
 app = Flask(__name__)
-
 app.secret_key = 'some_secret'
 
+"""
+Functions
+"""
 def is_logged_in(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -28,7 +32,6 @@ def is_logged_in(f):
         else:
             return redirect(url_for('login_register'))
     return wrap
-
 
 def is_user_id_valid(uid):
     # Return True or False depending on if the username is valid or not
@@ -40,6 +43,9 @@ def is_user_id_valid(uid):
 
     return True
 
+"""
+APIs
+"""
 
 @app.route('/add_item_api', methods=['POST'])
 @is_logged_in
@@ -58,25 +64,16 @@ def add_item_api():
             return jsonify(success=False, err_code='1', msg=field + ' not passed')
 
     # Adding the item into the database
-    doc_ref = db.collection("Inventory").document(data['item']).collection(
-        data['state']).document(data['city']).collection("leads").document()
-    doc_ref.set(data)
+    docref = None
+    if "itemId" in data:
+        docref = data["itemId"]
+    doc_ref = db.collection("Inventory").document(data['item']).collection(data['state']).document(data['city']).collection("leads").document(docref)
+    doc_ref.set(data , merge = True)
 
-    db.collection("users").document(username).update({"leads" : firestore.ArrayUnion([doc_ref.path])})
-
-    # Also updating the list of available cities in a state
-    doc = db.collection("states").document(data['state']).get()
-    if doc.exists:
-        fields = doc.to_dict()
-        # only if the city is not added to the set of cities for this state
-        if data['city'] not in fields['cities']:
-            fields['cities'].append(data['city'])
-            db.collection("states").document(data['state']).set(fields)
-    else:
-        # creating the new doc for the state
-        dict = {"cities": [data["city"]]}
-        db.collection("states").document(data['state']).set(dict)
-
+    if "itemId" not in data:
+        db.collection("users").document(username).update({"leads" : firestore.ArrayUnion([doc_ref.path])})
+        db.collection("references").document(doc_ref.id).set({"address" : doc_ref.path})
+    doc = db.collection("states").document(data['state']).set({"cities" : firestore.ArrayUnion([data['city']])} , merge = True)
     return jsonify(success=True)
 
 @app.route('/get_leads_api', methods=['POST'])
@@ -111,16 +108,40 @@ def vote():
     change_to = data['change_to']
     username = session['username']
     leadId = data['leadId']
-    item = data['item']
-    city = data['city']
-    state = data['state']
     cur_status = data['cur_status']
     net_upvotes = data['net_upvotes']
 
+    address = db.collection("references").document(leadId).get().to_dict()["address"]
+    address = address.split("/")
     ndata = {'votes' : {username : change_to} , 'net_upvotes' : net_upvotes + change_to - cur_status}
-    db.collection("Inventory").document(item).collection(state).document(city).collection("leads").document(leadId).set(ndata , merge=True)
+    db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).set(ndata , merge=True)
     return jsonify(success=True)
 
+@app.route('/username_exists', methods=['POST'])
+def check_if_username_exists():
+    # needs username and check if the username exists or not
+    # returns true and false depending on if it exists
+
+    req_data = request.json
+
+    if is_user_id_valid(req_data["username"]):
+        # Make the request now
+        userid_ref = db.collection(u'users').document(
+            req_data['username']).get()
+
+        if userid_ref.exists:
+            print("username exists")
+            return jsonify(success=True)
+        else:
+            print("username doesn't exists")
+            return jsonify(success=False, err_code='1')
+
+    else:
+        return jsonify(success=False, err_code='0')
+
+"""
+Routes
+"""
 @app.route('/favicon.ico')
 def give_favicon():
     return send_file('static/download.png')
@@ -134,14 +155,6 @@ def find():
         username = session["username"]
 
     return render_template('find.html', username=username)
-
-@app.route('/testfind')
-def testfind():
-    return render_template('testfind.html')
-
-@app.route('/testvote')
-def testvote():
-    return render_template('testvote.html')
 
 @app.route('/add')
 @is_logged_in
@@ -199,7 +212,6 @@ def logout():
     session.clear()
     return redirect(url_for('login_register'))
 
-
 @app.route('/register', methods=['POST'])
 def register_user():
     '''
@@ -231,29 +243,20 @@ def register_user():
     else:
         return jsonify(success=False, err_code='0')
 
+"""
+Test routes
+"""
 
-@app.route('/username_exists', methods=['POST'])
-def check_if_username_exists():
-    # needs username and check if the username exists or not
-    # returns true and false depending on if it exists
+@app.route('/testfind')
+def testfind():
+    return render_template('testfind.html')
 
-    req_data = request.json
+@app.route('/testvote')
+def testvote():
+    return render_template('testvote.html')
 
-    if is_user_id_valid(req_data["username"]):
-        # Make the request now
-        userid_ref = db.collection(u'users').document(
-            req_data['username']).get()
-
-        if userid_ref.exists:
-            print("username exists")
-            return jsonify(success=True)
-        else:
-            print("username doesn't exists")
-            return jsonify(success=False, err_code='1')
-
-    else:
-        return jsonify(success=False, err_code='0')
-
-
+"""
+Main 
+"""
 if __name__ == '__main__':
     app.run(debug=True)
