@@ -235,7 +235,8 @@
                         <div class="card horizontal">                      
                             <div class="card-stacked">
                                 <div class="card-content">
-                                    <p>I am a very simpl</p>
+                                    <div class="card-head"> ` + val.username  + ` </div>
+                                    <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
                                 </div>
                                 <div class="card-action">
                                     ` + val.contact + `
