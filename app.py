@@ -31,6 +31,13 @@ def is_logged_in(f):
             return redirect(url_for('login_register'))
     return wrap
 
+@app.route("/if_logged_in",methods=["POST"])
+def if_logged_in():
+    if 'logged_in' in session:
+         return jsonify(success=True)
+    else:
+        return jsonify(success=False)
+
 
 def is_user_id_valid(uid):
     # Return True or False depending on if the username is valid or not
@@ -180,7 +187,7 @@ def login_register():
 def logout():
     session["logged_in"] = False
     session.clear()
-    return redirect(url_for('login_register'))
+    return redirect(url_for('find'))
 
 
 @app.route('/register', methods=['POST'])
