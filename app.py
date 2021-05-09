@@ -20,7 +20,6 @@ app = Flask(__name__)
 
 app.secret_key = 'some_secret'
 
-
 def is_logged_in(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -117,6 +116,7 @@ def vote():
     state = data['state']
     cur_status = data['cur_status']
     net_upvotes = data['net_upvotes']
+
     ndata = {'votes' : {username : change_to} , 'net_upvotes' : net_upvotes + change_to - cur_status}
     db.collection("Inventory").document(item).collection(state).document(city).collection("leads").document(leadId).set(ndata , merge=True)
     return jsonify(success=True)
@@ -128,7 +128,12 @@ def give_favicon():
 @app.route('/')
 @app.route('/find')
 def find():
-    return render_template('find.html')
+    username = ""
+
+    if ("username" in session):
+        username = session["username"]
+
+    return render_template('find.html', username=username)
 
 @app.route('/testfind')
 def testfind():

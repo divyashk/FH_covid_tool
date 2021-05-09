@@ -26,65 +26,254 @@
 
 {% block body %}
 
-<div id="find_loc" class="d-flex w-50">
-    <div id="find_loc_heading">
-        <h4>Enter your requirements</h4>
-    </div>
+<div id="main" class="container">
 
-    <div class="row">
-        <div class="col s12">
+    <div id="find_loc" class="d-flex w-50">
+        <div id="find_loc_heading">
+            <h4>Enter your requirements</h4>
+        </div>
+
         <div class="row">
-            <div class="input-field col s12">
-            <i class="material-icons prefix">dashboard customize</i>
-            <input type="text" id="autocomplete-input-item" class="autocomplete">
-            <label for="autocomplete-input-item">Item</label>
-            </div>
-        </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col s12">
-            <div class="row">
-                <div class="input-field col s12">
-                <i class="material-icons prefix">map</i>
-                <input type="text" id="autocomplete-input-state" class="autocomplete">
-                <label for="autocomplete-input-state">State</label>
+            <div class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">dashboard customize</i>
+                        <input type="text" id="autocomplete-input-item" class="autocomplete">
+                        <label for="autocomplete-input-item">Item</label>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col s12">
-            <div class="row">
-                <div class="input-field col s12">
-                <i class="material-icons prefix">location_on</i>
-                <input type="text" id="autocomplete-input-city" class="autocomplete">
-                <label for="autocomplete-input-city">City</label>
+        <div class="row">
+            <div class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">map</i>
+                        <input type="text" id="autocomplete-input-state" class="autocomplete">
+                        <label for="autocomplete-input-state">State</label>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <a class="waves-effect waves-light btn">Find</a>
+        <div class="row">
+            <div class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">location_on</i>
+                        <input type="text" id="autocomplete-input-city" class="autocomplete">
+                        <label for="autocomplete-input-city">City</label>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-</div>
+        <div id="loading-anim" style="text-align: center; display: none;">
+            <div class="preloader-wrapper small active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a id="find-btn" class="waves-effect waves-light btn">Find</a>
+    </div> <!-- End of find loc -->
+
+    <div id="leads-show" class="row"></div>
+
+</div> <!-- End of main -->
+
 
 {% endblock %}
 
 {% block js %}
 
 <script>
-    
-    $(document).ready(function(){
+
+    const username = "{{ username }}";
+    var leadsData = [];
+    var globalCity = "";
+    var globalState = "";
+    var globalItem = "";
+
+    $(document).ready(function () {
         $('#autocomplete-input-city').autocomplete({
-        data: {
-            "Apple": null,
-            "Microsoft": null,
-            "Google": 'https://placehold.it/250x250'
-        },
+            data: {
+                "Apple": null,
+                "Microsoft": null,
+                "Google": 'https://placehold.it/250x250'
+            },
         });
+    });
+
+    handleVote = (leadIndex, toSet) => {
+        if (username) {
+            // User exist, so can proceed with calling the api
+            console.log("handle vote", leadIndex, toSet);
+
+            if (leadsData[leadIndex].cur_status == toSet) {
+                toSet = 0; // un vote button
+            }
+
+            data = {
+                cur_status: leadsData[leadIndex].cur_status,
+                change_to: toSet,
+                net_upvotes: leadsData[leadIndex].net_upvotes,
+                leadId: leadsData[leadIndex].leadId,
+                item: globalItem,
+                state: globalState,
+                city: globalCity,
+            }
+
+            console.log("vote data", data);
+
+
+            var payload = {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }
+
+            fetch('/vote_api', payload)
+                .then(res => res.json())
+                .then(res => {
+                    console.log('Get leads success', res);
+                    if (res['success']) {
+                        console.log("successful request")
+                    }
+                })
+                .catch(err => {
+                    console.log("Error in vote_api", err);
+                });
+
+            console.log("Submitted!");
+
+
+            // UI update will be done automatically by the snapshot listener
+
+
+        } else {
+            location.href = "/login";
+        }
+    }
+
+    // After clicking the find button
+    $("#find-btn").on("click", (e) => {
+        console.log("FInd button clicked", e);
+
+        // Find the data from the UI
+
+        data = {
+            item: 'oxygen cylinder',
+            state: 'uttar pradesh',
+            city: 'ghaziabad',
+        }
+
+        globalCity = data.city;
+        globalItem = data.item;
+        globalState = data.state;
+
+        $("#loading-anim").css("display", "block");
+        $("#find-btn").css("display", "none");
+
+        const db = firebase.firestore();
+        const ldRef = db.collection("Inventory").doc(data.item).collection(data.state).doc(data.city).collection("leads");
+
+        ldRef.onSnapshot((querySnapshot) => {
+            var leads = [];
+            querySnapshot.forEach((doc) => {
+                var dic = doc.data();
+                dic["leadId"] = doc.id;
+                leads.push(dic);
+            });
+
+            // Comparotor function
+            leads.sort((a, b) => {
+                if (a.net_upvotes > b.net_upvotes) return -1;
+                if (a.net_upvotes < b.net_upvotes) return 1;
+                return 0;
+            });
+
+            $("#leads-show").html("");
+            console.log("LEads are", leads);
+            leadsData = leads;
+
+            let toAdd = "";
+            leads.forEach((val, index) => {
+
+                var upVoteClass = "";
+                var downVoteClass = "";
+
+                if (username) {
+                    console.log("username found", username);
+
+                    var myVote = val.votes[username];
+                    if (myVote && myVote == 1) {
+                        upVoteClass = "color-green";
+                        leadsData[index].cur_status = 1;
+                    } else if (myVote && myVote == -1) {
+                        leadsData[index].cur_status = -1;
+                        downVoteClass = "color-red";
+                    } else {
+                        leadsData[index].cur_status = 0;
+                    }
+                }
+
+                toAdd += `
+                    <div class="col s12 m6">
+                        <div class="card horizontal">                      
+                            <div class="card-stacked">
+                                <div class="card-content">
+                                    <p>I am a very simpl</p>
+                                </div>
+                                <div class="card-action">
+                                    ` + val.contact + `
+                                </div>
+                            </div>
+                            <div class="right-row">
+                                <div class="upvote" onclick="handleVote(` + index + `, 1)">
+                                    <span class="material-icons ` + upVoteClass + `">
+                                        expand_less
+                                    </span>
+                                </div>
+
+                                <div class="up-vote-count">
+                                    ` + val.net_upvotes + `
+                                 </div>
+
+                                <div class="downvote" onclick="handleVote(` + index + `, -1)">
+                                    <span class="material-icons ` + downVoteClass + `">
+                                        expand_more
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+
+            });
+
+            $("#leads-show").append(toAdd);
+
+
+
+            $("#loading-anim").css("display", "none");
+            $("#find-btn").css("display", "block");
+            $("#find_loc").css("display", "none");
+        });
+
+        console.log("Submitted!");
     });
 
 </script>
