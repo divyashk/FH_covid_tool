@@ -1,0 +1,176 @@
+{% extends 'layouts/base.html' %}
+
+{% block css %}
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&display=swap");
+
+.main-profile{
+    display: flex;
+    justify-content: center;
+    height: 70vh;
+}
+
+.asked {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  display: flex;
+  max-width: 777px;
+  flex-direction: column;
+  background-color: white;
+  padding: 80px;
+  margin: 10px;
+  border-radius: 33px;
+  width: 100%;
+}
+
+.asked_profile {
+  display: flex;
+  align-items: center;
+}
+.asked_profile-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.asked_profile-content h3 {
+  font-weight: bold;
+  font-size: 25px;
+  line-height: 32px;
+}
+.asked_profile-content button {
+  border: 2px solid #0f1c52;
+  background-color: transparent;
+  padding: 15px 15px;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-top: 7px;
+}
+.asked_profile-content button:hover {
+    color: white;
+    transition-duration: 350ms;
+}
+.asked_footer ul {
+  display: flex;
+  list-style: none;
+  justify-content: space-between;
+  margin-top: 55px;
+  border-top: 2px solid #ccd1e6;
+  border-bottom: 2px solid #ccd1e6;
+}
+.asked_footer ul li {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 15px;
+  cursor: pointer;
+}
+.asked_footer ul li:hover {
+    transition-duration: 300ms;
+}
+.asked_footer ul li:last-child .down {
+  margin-left: 11px;
+}
+
+#profile-tab{
+    width: 100%;
+}
+
+/* Style tab links */
+.tablink {
+  color: black;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 100%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: black;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+
+</style>
+
+{% endblock %}
+
+{% block body %}
+    <div class="main-profile">
+        <div class="asked">
+      
+            
+            
+            <div class="asked_footer">
+                <ul>
+                <li><button class="tablink" onclick="openPage('Home', this)" id="defaultOpen">Profile</button></li>
+                <li><button class="tablink" onclick="openPage('About', this)">Post</button></li>
+                </ul>
+            </div>
+
+            <div>
+               
+                <div id="Home" class="tabcontent">
+                    <div class="asked_profile">
+                        <div class="asked_profile-content">
+                            <h3></h3>
+                        </div>
+                    </div>
+                    <p>8437151118</p>
+                </div>
+
+                <div id="About" class="tabcontent">
+                <h3>Posts</h3>
+                <p>Who we are and what we do.</p>
+                </div> 
+            </div>
+
+        </div>
+        
+
+
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+    function openPage(pageName, elmnt) {
+    // Hide all elements with class="tabcontent" by default */
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Remove the background color of all tablinks/buttons
+    tablinks = document.getElementsByClassName("tablink");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].style.backgroundColor = "";
+    }
+
+    // Show the specific tab content
+    document.getElementById(pageName).style.display = "block";
+
+    // Add the specific color to the button used to open the tab content
+    elmnt.style.backgroundColor = "#26a69a";
+    }
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click(); 
+    const db = firebase.firestore();
+    const username = "{{username}}";
+
+</script>
+{% endblock %}
