@@ -1,5 +1,5 @@
 #find_loc,
-#add_item
+#add_item, .profile-main
 {   
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     width: 450px;
@@ -20,6 +20,11 @@
 nav{
     background-color: #26a69a;
 }
+
+nav ul a {
+    font-size: 1.4rem;
+}
+
 .right-row {
     min-width: 40px;
     text-align: center;
@@ -72,4 +77,11 @@ nav{
     font-size: 1.48rem;
     color: #2da7ff;
     cursor: pointer;
+}
+
+.profile-main{
+    width:80%;
+    height:100vh;
+    max-width: 1500px;
+    margin-top: 0;
 }

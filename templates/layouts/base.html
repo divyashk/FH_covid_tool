@@ -14,7 +14,6 @@
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
     <link rel="stylesheet" href="/static/frontend/css/style.css">
     {% block css %}
     {% endblock %}
@@ -24,11 +23,10 @@
 <body>
 
     <ul id="dropdown1" class="dropdown-content">
-        <li><a href="#!">Profile</a></li>
         <li><a href="#!">My-items</a></li>
         <li class="divider"></li>
         <li><a id="signout-btn-nav" href="/logout">Signout</a></li>
-    </ul><head>
+    </ul>
     <nav>
         <div class="nav-wrapper">
             <a href="#!" class="brand-logo" style="margin-left: 10px;">Co-Finder</a>
@@ -40,7 +38,6 @@
             </ul>
         </div>
     </nav> 
-
             
     {% block body %}
     {% endblock %}

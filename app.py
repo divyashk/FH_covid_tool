@@ -52,6 +52,57 @@ def weight(i):
 """
 APIs
 """
+
+@app.route('/register', methods=['POST'])
+def register_user():
+    '''
+    Get the data from the request body in JSON Format
+    @json needed
+    - password
+    - username
+    - Rest any other details like name, etc
+    '''
+
+    data = request.json
+
+    compulsary_items = ["username", "password"]
+
+    for item in compulsary_items:
+        if item not in data:
+            return jsonify(success=False, err_code='1', msg=item + 'not passed')
+
+    if (is_user_id_valid(data['username'])):
+        # User id is valid, go ahead
+        data['password'] = sha256_crypt.encrypt(str(data['password']))
+
+        # Update the user in the database
+        db.collection("users").document(data['username']).set(data, merge=True)
+
+        session['logged_in'] = True
+        session['username'] = data['username']
+        return jsonify(success=True)
+    else:
+        return jsonify(success=False, err_code='0')
+
+
+
+@app.route('/user_info', methods=['GET', 'POST'])
+@is_logged_in
+def user_info():
+    user_info = db.collection(u'users').document(session['username']).get()
+
+    if user_info.exists:
+        print("User exists")
+        resDict = {
+            "name": user_info.get('name'),
+            "contact": user_info.get('phone'),
+        }
+        return jsonify(success=True, user_info=resDict)
+    else:
+        print("User doesn't exists")
+        return jsonify(success=False, err_code='1')
+
+
 @app.route("/if_logged_in",methods=["POST"])
 def if_logged_in():
     if 'logged_in' in session:
@@ -207,22 +258,6 @@ def find():
 def add():
     return render_template('add.html')
 
-@app.route('/user_info', methods=['GET', 'POST'])
-@is_logged_in
-def user_info():
-    user_info = db.collection(u'users').document(session['username']).get()
-
-    if user_info.exists:
-        print("User exists")
-        resDict = {
-            "name": user_info.get('name'),
-            "contact": user_info.get('phone'),
-        }
-        return jsonify(success=True, user_info=resDict)
-    else:
-        print("User doesn't exists")
-        return jsonify(success=False, err_code='1')
-
 @app.route('/login', methods=['GET', 'POST'])
 def login_register():
     '''
@@ -251,42 +286,19 @@ def login_register():
         else:
             return jsonify(success=False)
 
+@app.route('/profile')
+@is_logged_in
+def profile():
+    if session['username']:
+        username= session['username'];
+    return render_template("profile.html", username = username);
+
 @app.route('/logout')
 def logout():
     session["logged_in"] = False
     session.clear()
     return redirect(url_for('find'))
 
-@app.route('/register', methods=['POST'])
-def register_user():
-    '''
-    Get the data from the request body in JSON Format
-    @json needed
-    - password
-    - username
-    - Rest any other details like name, etc
-    '''
-
-    data = request.json
-
-    compulsary_items = ["username", "password"]
-
-    for item in compulsary_items:
-        if item not in data:
-            return jsonify(success=False, err_code='1', msg=item + 'not passed')
-
-    if (is_user_id_valid(data['username'])):
-        # User id is valid, go ahead
-        data['password'] = sha256_crypt.encrypt(str(data['password']))
-
-        # Update the user in the database
-        db.collection("users").document(data['username']).set(data, merge=True)
-
-        session['logged_in'] = True
-        session['username'] = data['username']
-        return jsonify(success=True)
-    else:
-        return jsonify(success=False, err_code='0')
 
 """
 Test routes

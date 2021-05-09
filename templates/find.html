@@ -36,7 +36,7 @@
             <div class="col s12">
                 <div class="row">
                     <div class="input-field col s12">
-                        <i class="material-icons prefix">dashboard customize</i>
+                        <i class="material-icons prefix">dashboard_customize</i>
                         <input type="text" id="autocomplete-input-item" class="autocomplete">
                         <label for="autocomplete-input-item">Item</label>
                     </div>
@@ -109,7 +109,7 @@
             data: {
                 "Apple": null,
                 "Microsoft": null,
-                "Google": 'https://placehold.it/250x250'
+                "Google": null
             },
         });
     });
@@ -169,7 +169,7 @@
 
     // After clicking the find button
     $("#find-btn").on("click", (e) => {
-        console.log("FInd button clicked", e);
+        console.log("Find button clicked", e);
 
         // Find the data from the UI
 
@@ -234,7 +234,8 @@
                         <div class="card horizontal">                      
                             <div class="card-stacked">
                                 <div class="card-content">
-                                    <div class="card-head"> ` + val.username  + ` </div>
+                                    <div class="card-head"> ` + val.item  + ` </div>
+                                    <p>` + val.name + `</p>
                                     <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
                                 </div>
                                 <div class="card-action">
