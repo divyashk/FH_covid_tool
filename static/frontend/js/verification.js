@@ -6,13 +6,13 @@ var item_list = {
   "oxygen cylinder": null,
   "oxygen concentrator": null,
   "hospital beds": null,
-  "plasma A+": null,
-  "plasma AB+": null,
-  "plasma B+": null,
-  "plasma O+": null,
-  "plasma A-": null,
-  "plasma AB-": null,
-  "plasma O-": null,
+  "plasma a+": null,
+  "plasma ab+": null,
+  "plasma b+": null,
+  "plasma o+": null,
+  "plasma a-": null,
+  "plasma ab-": null,
+  "plasma o-": null,
 };
 
 function check_item(item) {
