@@ -123,6 +123,20 @@ def vote():
     db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).set(ndata , merge=True)
     return jsonify(success=True)
 
+@app.route('/delete_lead_api', methods=['POST'])
+@is_logged_in
+def delete_lead():
+    data = request.json
+    leadId = data['leadId']
+    username = session['username']
+    address = db.collection("references").document(leadId).get().to_dict()["address"]
+    iaddress = address.split("/")
+    db.collection("Inventory").document(iaddress[1]).collection(iaddress[2]).document(iaddress[3]).collection("leads").document(leadId).delete()
+    db.collection("users").document(username).update({'leads' : firestore.ArrayRemove([address])})
+    db.collection("references").document(leadId).delete()
+
+    return jsonify(success=True)
+
 @app.route('/username_exists', methods=['POST'])
 def check_if_username_exists():
     # needs username and check if the username exists or not
@@ -259,6 +273,10 @@ def testfind():
 @app.route('/testvote')
 def testvote():
     return render_template('testvote.html')
+
+@app.route('/testdelete')
+def testdelete():
+    return render_template('testdelete.html')
 
 """
 Main 

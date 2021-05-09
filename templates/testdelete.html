@@ -1,0 +1,30 @@
+Hello World
+{% block js %}
+    <script>
+    data = {
+        leadId : '4Ok37HvAp7UpwoedBSC7',
+    }
+    var payload = {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    }
+
+    fetch('/delete_lead_api', payload)
+        .then(res => res.json())
+        .then(res => {
+            console.log('Get leads success', res);
+            if (res['success']) {
+                console.log("successful request")
+            }
+        })
+        .catch(err => {
+            console.log("Error in get_leads_api");
+        });
+    console.log("Submitted!");
+    
+    </script>
+
+{% endblock %}
