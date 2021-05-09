@@ -119,26 +119,32 @@
             city: 'ghaziabad',
         }
 
-        let payload = {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        }
-
         $("#loading-anim").css("display", "block");
         $("#find-btn").css("display", "none");
-        fetch('/get_leads_api', payload)
-            .then(res => res.json())
-            .then(res => {
-                console.log('Get leads success', res);
-                if (res['success']) {
-                    console.log("successful request")
-                    // JSON.stringify(res['data'])
 
-                    
-                    let toAdd = `
+        const db = firebase.firestore();
+        const ldRef = db.collection("Inventory").doc(data.item).collection(data.state).doc(data.city).collection("leads");
+
+        ldRef.onSnapshot((querySnapshot) => {
+            var leads = [];
+            querySnapshot.forEach((doc) => {
+                leads.push(doc.data());
+            });
+
+            leads.sort((a, b) => {
+                if(a.net_upvotes > b.net_upvotes) return -1;
+                if(a.net_upvotes < b.net_upvotes) return 1;
+                return 0;
+            });
+
+            $("#leads-show").html("");
+            console.log("LEads are", leads);
+
+    
+            let toAdd = "";
+            leads.forEach(val => {
+
+                toAdd += `
                     <div class="col s12 m6">
                         <div class="card horizontal">                      
                             <div class="card-stacked">
@@ -146,7 +152,7 @@
                                     <p>I am a very simpl</p>
                                 </div>
                                 <div class="card-action">
-                                    <a href="#">This is a link</a>
+                                    ` + val.contact + `
                                 </div>
                             </div>
                             <div class="right-row">
@@ -157,8 +163,8 @@
                                 </div>
 
                                 <div class="up-vote-count">
-                                    78
-                                </div>
+                                    ` + val.net_upvotes + `
+                                 </div>
 
                                 <div class="downvote">
                                     <span class="material-icons">
@@ -170,22 +176,18 @@
                     </div>
                     `;
 
-                    $("#leads-show").append(toAdd);
-
-                    console.log(res["data"]);
-                } else {
-                    console.log("Success didn't came from server");
-                }
-            })
-            .catch(err => {
-                console.log("Error in get_leads_api");
-            }).finally(() => {
-                $("#loading-anim").css("display", "none");
-                $("#find-btn").css("display", "block");
             });
 
-        console.log("Submitted!");
+            $("#leads-show").append(toAdd);
 
+
+
+            $("#loading-anim").css("display", "none");
+            $("#find-btn").css("display", "block");
+            $("#find_loc").css("display", "none");
+        });
+
+        console.log("Submitted!");
     });
 
 </script>
