@@ -136,6 +136,11 @@ def add_item_api():
     doc_ref.set(data , merge = True)
 
     if "itemId" not in data:
+
+        # Also add some randome data to the docs
+        db.collection("Inventory").document(data['item']).set( {"desc" : "Hello world" })
+        db.collection("Inventory").document(data['item']).collection(data['state']).document(data['city']).set({"city_desc": "Wow"})
+
         db.collection("users").document(username).update({"leads" : firestore.ArrayUnion([doc_ref.path])})
         db.collection("references").document(doc_ref.id).set({"address" : doc_ref.path})
     doc = db.collection("states").document(data['state']).set({"cities" : firestore.ArrayUnion([data['city']])} , merge = True)
