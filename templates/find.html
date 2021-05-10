@@ -25,6 +25,24 @@
     .card-action {
         display: flex;
     }
+
+    .modal-footer {
+        display: flex;
+        text-align: left;
+        margin-bottom: 12px;
+        border-top: 1px solid #7c7c7c;
+    }
+
+    .modal-footer .input-field {
+        flex: auto;
+    }
+
+    #modal1 .modal-close {
+        position: absolute;
+        right: 12px;
+        top: 24px;
+        z-index: 1004;
+    }
 </style>
 {% endblock %}
 
@@ -110,14 +128,24 @@
         <div class="modal-content">
             <h4>Modal Header</h4>
             <p>A bunch of text</p>
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">
+                <span class="material-icons">close</span>
+            </a>
         </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
-    </div>
 
-    <!-- Modal Trigger -->
-    <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
+        <div id="comment-load" class="progress" style="margin: 0.5rem; display: none;">
+            <div class="indeterminate"></div>
+        </div>
+        <form onsubmit="handleSendComment(event)" class="modal-footer">
+            <div class="input-field inline">
+                <input id="comment_inline" type="text" class="validate">
+                <label for="comment_inline">Enter comment</label>
+            </div>
+            <button type="submit" class="submit waves-effect waves-green btn-flat">
+                <span class="material-icons" style="vertical-align: bottom;"> send </span>
+            </button>
+        </form>
+    </div>
 
 </div> <!-- End of main -->
 
@@ -133,6 +161,7 @@
     var globalCity = "";
     var globalState = "";
     var globalItem = "";
+    var leadSelected = "";
 
     const byId = (id) => { return document.getElementById(id); }
     const db = firebase.firestore();
@@ -166,8 +195,53 @@
         openModal = (index, e) => {
             console.log("index", index);
 
+            leadSelected = leadsData[index].leadId;
+            // Set the data here
+
             var instance = M.Modal.getInstance(document.getElementById("modal1"));
             instance.open();
+        }
+
+        handleSendComment = (e) => {
+            // Find the leadId from the global selected lead id
+            e.preventDefault();
+
+            console.log("submti bnutton called", e);
+            $("#comment-load").css("display", "block");
+
+            // Make API Request 
+            const comment = $("#comment_inline").val();
+
+            data = {
+                leadId: leadSelected,
+                comment: comment,
+            }
+
+            var payload = {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }
+
+            fetch('/add_comment', payload)
+                .then(res => res.json())
+                .then(res => {
+                    console.log('Get leads success', res);
+                    if (res['success']) {
+                        console.log("successful request");
+                        $("#comment_inline").val("");
+                    }
+                })
+                .catch(err => {
+                    console.log("Error in get_leads_api", err);
+                }).finally(() => {
+                    $("#comment-load").css("display", "none");
+                });
+
+            console.log("Submitted!");
+
         }
 
 
