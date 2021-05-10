@@ -52,9 +52,6 @@
                         <i class="material-icons prefix">map</i>
                         <select id="autocomplete-input-state">
                             <option value="" disabled selected>Choose State</option>
-                            <option value="1">Option 1</option>
-                            <option value="2">Option 2</option>
-                            <option value="3">Option 3</option>
                         </select>
                     </div>
                 </div>
@@ -68,9 +65,6 @@
                         <i class="material-icons prefix">location_on</i>
                         <select id="autocomplete-input-city">
                             <option value="" disabled selected>Choose City</option>
-                            <option value="1">Option 1</option>
-                            <option value="2">Option 2</option>
-                            <option value="3">Option 3</option>
                         </select>
                     </div>
                 </div>
@@ -103,7 +97,7 @@
                 <a class="btn waves-effect waves-light" href="/">Search another</a>
             </div>
         </div>
-        
+
         <div id="leads-show" class="row"></div>
     </div>
 
@@ -125,6 +119,16 @@
     const byId = (id) => { return document.getElementById(id); }
     const db = firebase.firestore();
 
+    function showAimaation() {
+        $("#loading-anim").css("display", "block");
+        $("#find-btn").css("display", "none");
+    }
+
+    function hideAnimation() {
+        $("#loading-anim").css("display", "none");
+        $("#find-btn").css("display", "block");
+    }
+
     $(document).ready(function () {
         $('#autocomplete-input-city').autocomplete({
             data: {
@@ -144,8 +148,12 @@
         $("#autocomplete-input-item").on('change', function () {
             const itemSelected = $(this).val();
 
+            globalItem = itemSelected;
+
             // We need to find the number of subcollections from python
             const data = { item: itemSelected };
+
+            showAimaation();
 
             fetch('/get_states', {
                 method: 'POST', // or 'PUT'
@@ -157,10 +165,59 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
+
+                    var optionsToAdd = "<option value=\"\" disabled selected>Choose State</option>";
+
+                    // Update the city
+                    $("#autocomplete-input-city").html(optionsToAdd);
+                    $("#autocomplete-input-city").trigger('contentChanged');
+
+                    data.states.forEach((val) => {
+                        // console.log(doc.id, " => ", doc.data());
+                        optionsToAdd += "<option value=\"" + val + "\"> " + val + " </option>"
+                    });
+
+                    // Now update the options
+                    $("#autocomplete-input-state").html(optionsToAdd);
+                    $("#autocomplete-input-state").trigger('contentChanged');
+
                 })
                 .catch((error) => {
                     console.error('Error:', error);
+                }).finally(() => {
+                    hideAnimation();
                 });
+        });
+
+        $("#autocomplete-input-state").on('change', function () {
+            const itemSelected = $(this).val();
+            globalState = itemSelected;
+
+            showAimaation();
+
+            db.collection("Inventory").doc(globalItem).collection(globalState).get()
+            .then((querySnapshot) => {
+
+                console.log("Query snapshot of city");
+                // Loop in each query snapshot and add options in autocomplete-input-item
+
+                var optionsToAdd = "<option value=\"\" disabled selected>Choose City</option>";
+
+                querySnapshot.forEach((doc) => {
+                    // console.log(doc.id, " => ", doc.data());
+                    optionsToAdd += "<option value=\"" + doc.id + "\"> " + doc.id + " </option>"
+                });
+
+                // Now update the options
+                $("#autocomplete-input-city").html(optionsToAdd);
+                $("#autocomplete-input-city").trigger('contentChanged');
+            })
+            .catch((err) => {
+                console.log("Error came while fetching data", err);
+            }).finally(() => {
+                hideAnimation();
+            });
+
         });
 
         db.collection("Inventory").get()
@@ -245,24 +302,39 @@
 
         // Find the data from the UI
 
+        // data = {
+        //     item: 'oxygen cylinder',
+        //     state: 'uttar pradesh',
+        //     city: 'ghaziabad',
+        // }
+
         data = {
-            item: 'oxygen cylinder',
-            state: 'uttar pradesh',
-            city: 'ghaziabad',
+            item: byId("autocomplete-input-item").value,
+            state: byId("autocomplete-input-state").value,
+            city: byId("autocomplete-input-city").value,
         }
 
-        // data = {
-        //     item: byId("autocomplete-input-item").value,
-        //     state: byId("autocomplete-input-state").value,
-        //     city: byId("autocomplete-input-city").value,
-        // }
+        if (!data.item) {
+            alert("Please select Item name");
+            return;
+        }
+
+        if (!data.state) {
+            alert("Please select Item state");
+            return;
+        }
+
+        if (!data.city) {
+            alert("Please select Item city");
+            return;
+        }
+
 
         globalCity = data.city;
         globalItem = data.item;
         globalState = data.state;
 
-        $("#loading-anim").css("display", "block");
-        $("#find-btn").css("display", "none");
+        showAimaation();
 
         const ldRef = db.collection("Inventory").doc(data.item).collection(data.state).doc(data.city).collection("leads");
 
@@ -346,8 +418,7 @@
 
 
 
-            $("#loading-anim").css("display", "none");
-            $("#find-btn").css("display", "block");
+            hideAnimation();
             $("#find_loc").css("display", "none");
             $("#leads-container").css("display", "block");
         });

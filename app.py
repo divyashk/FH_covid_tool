@@ -247,12 +247,13 @@ def get_states():
     This nees the item and it finds all the subcollections
     """
 
+    states = []
     collections = db.collection("Inventory").document(request.json["item"]).collections()
-    for collection in collections:
-        for doc in collection.stream():
-            print(f'{doc.id} => {doc.to_dict()}')
 
-    return jsonify(success=True)
+    for collection in collections:
+        states.append(collection.id)
+
+    return jsonify(success=True, states=states)
 
 """
 Routes
