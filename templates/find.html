@@ -21,6 +21,28 @@
             margin: 0 12px;
         }
     }
+
+    .card-action {
+        display: flex;
+    }
+
+    .modal-footer {
+        display: flex;
+        text-align: left;
+        margin-bottom: 12px;
+        border-top: 1px solid #7c7c7c;
+    }
+
+    .modal-footer .input-field {
+        flex: auto;
+    }
+
+    #modal1 .modal-close {
+        position: absolute;
+        right: 12px;
+        top: 24px;
+        z-index: 1004;
+    }
 </style>
 {% endblock %}
 
@@ -101,6 +123,30 @@
         <div id="leads-show" class="row"></div>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Modal Header</h4>
+            <p>A bunch of text</p>
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">
+                <span class="material-icons">close</span>
+            </a>
+        </div>
+
+        <div id="comment-load" class="progress" style="margin: 0.5rem; display: none;">
+            <div class="indeterminate"></div>
+        </div>
+        <form onsubmit="handleSendComment(event)" class="modal-footer">
+            <div class="input-field inline">
+                <input id="comment_inline" type="text" class="validate">
+                <label for="comment_inline">Enter comment</label>
+            </div>
+            <button type="submit" class="submit waves-effect waves-green btn-flat">
+                <span class="material-icons" style="vertical-align: bottom;"> send </span>
+            </button>
+        </form>
+    </div>
+
 </div> <!-- End of main -->
 
 
@@ -115,6 +161,7 @@
     var globalCity = "";
     var globalState = "";
     var globalItem = "";
+    var leadSelected = "";
 
     const byId = (id) => { return document.getElementById(id); }
     const db = firebase.firestore();
@@ -138,11 +185,64 @@
             },
         });
 
+        $('.modal').modal();
         $('select').formSelect();
 
         $('select').on('contentChanged', function () {
             $(this).formSelect();
         });
+
+        openModal = (index, e) => {
+            console.log("index", index);
+
+            leadSelected = leadsData[index].leadId;
+            // Set the data here
+
+            var instance = M.Modal.getInstance(document.getElementById("modal1"));
+            instance.open();
+        }
+
+        handleSendComment = (e) => {
+            // Find the leadId from the global selected lead id
+            e.preventDefault();
+
+            console.log("submti bnutton called", e);
+            $("#comment-load").css("display", "block");
+
+            // Make API Request 
+            const comment = $("#comment_inline").val();
+
+            data = {
+                leadId: leadSelected,
+                comment: comment,
+            }
+
+            var payload = {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }
+
+            fetch('/add_comment', payload)
+                .then(res => res.json())
+                .then(res => {
+                    console.log('Get leads success', res);
+                    if (res['success']) {
+                        console.log("successful request");
+                        $("#comment_inline").val("");
+                    }
+                })
+                .catch(err => {
+                    console.log("Error in get_leads_api", err);
+                }).finally(() => {
+                    $("#comment-load").css("display", "none");
+                });
+
+            console.log("Submitted!");
+
+        }
 
 
         $("#autocomplete-input-item").on('change', function () {
@@ -199,27 +299,27 @@
             showAimaation();
 
             db.collection("Inventory").doc(globalItem).collection(globalState).get()
-            .then((querySnapshot) => {
+                .then((querySnapshot) => {
 
-                console.log("Query snapshot of city");
-                // Loop in each query snapshot and add options in autocomplete-input-item
+                    console.log("Query snapshot of city");
+                    // Loop in each query snapshot and add options in autocomplete-input-item
 
-                var optionsToAdd = "<option value=\"\" disabled selected>Choose City</option>";
+                    var optionsToAdd = "<option value=\"\" disabled selected>Choose City</option>";
 
-                querySnapshot.forEach((doc) => {
-                    // console.log(doc.id, " => ", doc.data());
-                    optionsToAdd += "<option value=\"" + doc.id + "\"> " + doc.id + " </option>"
+                    querySnapshot.forEach((doc) => {
+                        // console.log(doc.id, " => ", doc.data());
+                        optionsToAdd += "<option value=\"" + doc.id + "\"> " + doc.id + " </option>"
+                    });
+
+                    // Now update the options
+                    $("#autocomplete-input-city").html(optionsToAdd);
+                    $("#autocomplete-input-city").trigger('contentChanged');
+                })
+                .catch((err) => {
+                    console.log("Error came while fetching data", err);
+                }).finally(() => {
+                    hideAnimation();
                 });
-
-                // Now update the options
-                $("#autocomplete-input-city").html(optionsToAdd);
-                $("#autocomplete-input-city").trigger('contentChanged');
-            })
-            .catch((err) => {
-                console.log("Error came while fetching data", err);
-            }).finally(() => {
-                hideAnimation();
-            });
 
         });
 
@@ -269,7 +369,7 @@
 
             // Write logic for locally faster
             const leadId = leadsData[leadIndex].leadId;
-            
+
             // First update the votes
             const leadEle = $("#lead" + leadId);
             leadEle.find(".up-vote-count").html(data.net_upvotes + data.change_to - data.cur_status);
@@ -329,11 +429,11 @@
         }
 
         // Do comment these lines
-        // data = {
-        //     item: 'oxygen cylinder',
-        //     state: 'uttar pradesh',
-        //     city: 'ghaziabad',
-        // }
+        data = {
+            item: 'oxygen cylinder',
+            state: 'uttar pradesh',
+            city: 'ghaziabad',
+        }
 
         if (!data.item) {
             alert("Please select Item name");
@@ -404,15 +504,21 @@
                         <div class="card horizontal">                      
                             <div class="card-stacked">
                                 <div class="card-content">
-                                    <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
+                                    <div class="card-head" onclick="openModal(` + index + `, event)"> ` + val.item + " x " + val.quantity + ` </div>
                                     <a class="profile-link" href="/profile/` + val.username + `">` + val.name + `</a>
                                     <div class="address" style="margin-top: 12px">
                                         <a target="_none" rel="noopener" href="https://www.google.com/maps/search/` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `">` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + ` <span class="material-icons my-loc-icon">location_on</span> ` + `</a>
                                     </div>
                                 </div>
                                 <div class="card-action">
+                                    <div>
                                     <i class="material-icons prefix" style="vertical-align: middle;">phone</i>
                                     <a href= tel:` + val.contact + `>` + val.contact + `</a>
+                                    </div>
+                                    <div style="margin-left: auto; cursor: pointer;" onclick="openModal(` + index + `, event)">
+                                        ` + (Boolean(val.comments) ? (val.comments.length) : 0) + `
+                                        <span class="material-icons" style="vertical-align: middle">comment</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="right-row">
