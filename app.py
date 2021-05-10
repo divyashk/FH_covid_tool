@@ -310,7 +310,7 @@ def get_votes():
             downvoters.append([voter, rating])
     print(upvoters)
     print(downvoters)
-    return jsonify(upvoters = upvoters , downvoters = downvoters)
+    return jsonify(upvoters = upvoters , downvoters = downvoters , urls = doc["imageReviews"])
 
 @app.route("/imageReviewUpload", methods=['POST'])
 def handle_image_upload():
