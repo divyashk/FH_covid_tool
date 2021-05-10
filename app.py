@@ -6,6 +6,7 @@ import os
 import time
 import math 
 import datetime
+import vaccine as v
 
 import firebase_admin
 from firebase_admin import credentials
@@ -324,6 +325,11 @@ def logout():
     session.clear()
     return redirect(url_for('find'))
 
+@app.route('/vaccine' , methods=['GET' , 'POST'])
+def vaccine():
+    if request.method == "POST":
+        return v.query(request.json["pincode"])
+    return render_template("vaccine.html")
 
 """
 Test routes

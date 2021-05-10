@@ -1,0 +1,32 @@
+<div id = "text"> </div>
+{% block js %}
+    <script>
+    data = {
+        pincode : '144001',
+    }
+    var payload = {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    }
+
+    fetch('/vaccine', payload)
+        .then(res => res.json())
+        .then(res => {
+            console.log(res)
+            document.getElementById("text").innerHTML = res["message"]
+            if (res['success']) {
+                document.getElementById("text").innerHTML += res["output"]
+                console.log("successful request")
+            }
+        })
+        .catch(err => {
+            console.log("Error in get_leads_api");
+        });
+    console.log("Submitted!");
+    
+    </script>
+
+{% endblock %}

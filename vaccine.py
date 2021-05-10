@@ -3,7 +3,9 @@ from datetime import date,datetime
 import os
 import smtplib
 from time import time,ctime
+import utility
 import yaml
+from flask import jsonify
 
 def parse_pincode(result):
     output = []
@@ -27,9 +29,9 @@ def call_api(url, headers):
         # print(result)
         output = parse_pincode(result)
         if len(output) > 0:
-            return jsonify(success=False, message = "Vaccine available" , output = output)
+            return jsonify(success=True, message = "Vaccine available" , output = output)
         else:
-            return jsonify(success=False, message = 'Vaccine not available')
+            return jsonify(success=True, message = 'Vaccine not available')
     else:
         return jsonify(success=False, message = 'Something went wrong')
 
