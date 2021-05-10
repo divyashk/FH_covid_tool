@@ -195,6 +195,8 @@
             <div id="comment-load" class="progress" style="margin: 0.5rem; display: none;">
                 <div class="indeterminate"></div>
             </div>
+            
+            {% if(username) %}
             <form onsubmit="handleSendComment(event)" class="modal-footer">
                 <div class="input-field inline">
                     <input id="comment_inline" type="text" class="validate">
@@ -204,6 +206,7 @@
                     <span class="material-icons" style="vertical-align: bottom;"> send </span>
                 </button>
             </form>
+            {% endif %}
         
         </div>
 
@@ -371,13 +374,9 @@
 {% block js %}
 
 <script>
-    if (location.hash == "#upvotes-tab") {
-        document.getElementById("#upvotes-tab").click();
-    } else {
-        // Get the element with id="defaultOpen" and click on it
-        document.getElementById("defaultOpen").click();
-    }
 
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
 
     function openPage(pageName, elmnt) {
         console.log("Open page callsed");
@@ -388,8 +387,6 @@
         for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
         }
-
-        location.hash = pageName;
 
         // Remove the background color of all tablinks/buttons
         tablinks = document.getElementsByClassName("tablink");

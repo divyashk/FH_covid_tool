@@ -244,6 +244,8 @@ def add_comment():
             "time" : datetime.datetime.now()
         }])
     } , merge = True)
+    
+    print("Hello")
     return jsonify(success=True)
 
 @app.route('/get_states', methods=['POST'])
