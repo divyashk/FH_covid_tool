@@ -381,7 +381,7 @@
                         `;
                         })
                     } else {
-                        toAdd += "No comments yet!";
+                        toAdd += "No reviews yet!";
                     }
                     $("#post-comments").html(toAdd);
                     data = {
@@ -680,7 +680,7 @@
         globalItem = data.item;
         globalState = data.state;
 
-        showAimaation();
+        showAnimation();
 
         const ldRef = db.collection("Inventory").doc(data.item).collection(data.state).doc(data.city).collection("leads");
 

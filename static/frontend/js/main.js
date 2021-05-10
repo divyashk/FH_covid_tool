@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    
+    $('.sidenav').sidenav();
     var payload = {
         method: 'POST', // or 'PUT'
         headers: {
