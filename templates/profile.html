@@ -231,8 +231,8 @@
     const city = leadsData[index].item;
     const qty = leadsData[index].quantity;
     const address = leadsData[index].address;
-
-    location.href = "/add?id=" + leadId + "&item=" + item + "&state=" + state + "&city=" + city + "&qty=" + qty + "&address=" + address;
+    const contact = leadsData[index].contact;
+    location.href = "/add?id=" + leadId + "&item=" + item + "&state=" + state + "&city=" + city + "&qty=" + qty + "&address=" + address + "&contact=" + contact;
   }
 
   handleRemove = (index) => {
@@ -252,7 +252,7 @@
       },
       body: JSON.stringify(data),
     }
-
+    
     fetch('/delete_lead_api', payload)
       .then(res => res.json())
       .then(res => {

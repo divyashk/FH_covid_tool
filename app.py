@@ -7,7 +7,7 @@ import time
 import math 
 import datetime
 import vaccine as v
-
+import json
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -200,7 +200,6 @@ def delete_lead():
     db.collection("Inventory").document(iaddress[1]).collection(iaddress[2]).document(iaddress[3]).collection("leads").document(leadId).delete()
     db.collection("users").document(username).update({'leads' : firestore.ArrayRemove([address])})
     db.collection("references").document(leadId).delete()
-
     return jsonify(success=True)
 
 @app.route('/username_exists', methods=['POST'])
@@ -342,10 +341,25 @@ def find():
 
     return render_template('find.html', username=username)
 
-@app.route('/add')
+@app.route('/add', methods=['GET'])
 @is_logged_in
 def add():
-    return render_template('add.html')
+    id = request.args.get('id');
+    if id != None:
+        dict_pass = {};
+        dict_pass["id"] = id
+        dict_pass["contact"] = request.args.get('contact');
+        dict_pass["address"] = request.args.get('address');
+        dict_pass["city"] = request.args.get('city');
+        dict_pass["name"] = request.args.get('name');
+        dict_pass["item_name"] = request.args.get('item');
+        return render_template("add.html", data= dict_pass)
+    else:
+        return render_template("add.html")
+    
+
+    
+    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_register():
