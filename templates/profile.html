@@ -148,6 +148,7 @@
           <div class="profile-left col s6">
             <div class="asked_profile">
               <div class="asked_profile-content">
+                <img src="" id="pp" style="width:100%">
                 <h3 id="show-name-here" style="margin-bottom: 4px;"></h3>
                 <div class="rating"></div>
               </div>
@@ -361,7 +362,7 @@
 
       $("#show-name-here").html(data.name);
       $("#show-phone-here").html(` <i class="material-icons prefix" style="vertical-align: middle;">phone</i> ` + data.phone + ``);
-
+      $("#pp").prop("src" , data.image);
       // Ratings
       if (data.net_rating) {
         $(".rating").html(getRatingString(data.net_rating));
