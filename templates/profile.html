@@ -183,6 +183,50 @@
 
   var leadsData = [];
 
+  handleUpdate = (index) => {
+    // Find the index from leadsdata
+    const leadId = leadsData[index].leadId;
+    const item = leadsData[index].item;
+    const state = leadsData[index].item;
+    const city = leadsData[index].item;
+    const qty = leadsData[index].quantity;
+    const address = leadsData[index].address;
+
+    location.href = "/add?id=" + leadId + "&item=" + item + "&state=" + state + "&city=" + city + "&qty=" + qty + "&address=" + address;
+  }
+
+  handleRemove = (index) => {
+    // Find the index from leadsdata
+    const leadId = leadsData[index].leadId;
+
+    // const referenceId = "Inventory/" + item + "/" + state + "/" + city + "/" + leadId;
+    // console.log("delete item", referenceId);
+
+    data = {
+      leadId: leadId,
+    }
+    var payload = {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }
+
+    fetch('/delete_lead_api', payload)
+      .then(res => res.json())
+      .then(res => {
+        console.log('Get leads success', res);
+        if (res['success']) {
+          console.log("successful request");
+          location.reload();
+        }
+      })
+      .catch(err => {
+        console.log("Error in get_leads_api");
+      });
+    console.log("Submitted!");
+  }
 
   updatePosts = (val, index) => {
     leadsData.push(val);
@@ -221,6 +265,18 @@
                   <i class="material-icons prefix" style="vertical-align: middle;">phone</i>
                   ` + val.contact + `
               </div>
+              </div>
+              <div class="right-row">
+                  <div class="edit-item" onclick="handleUpdate(` + index + `, 1)">
+                      <span class="material-icons color-blue">
+                          edit
+                      </span>
+                  </div>
+                  <div class="remove-item" onclick="handleRemove(` + index + `, -1)">
+                      <span class="material-icons color-red">
+                          delete
+                      </span>
+                  </div>
               </div>
           </div>
       </div>
