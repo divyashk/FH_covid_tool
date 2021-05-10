@@ -271,11 +271,16 @@ def update_rating():
     '''
     data = request.json 
     ndata = db.collection("users").document(data["reviewed"]).get().to_dict()
-    ln = len(ndata["rating"])
-    cur = ndata["net_rating"]
-    new_rating = ((cur*ln) + data["rating"]) / (ln + 1)
-    if data["reviewer"] in ndata["rating"]:
-        new_rating = (cur*ln + data["rating"] - ndata["rating"][data["reviewer"]]) / ln
+    
+    if "rating" in ndata:
+        ln = len(ndata["rating"])
+        cur = ndata["net_rating"]
+        new_rating = ((cur*ln) + data["rating"]) / (ln + 1)
+        if data["reviewer"] in ndata["rating"]:
+            new_rating = (cur*ln + data["rating"] - ndata["rating"][data["reviewer"]]) / ln
+    else:
+        new_rating = data["rating"]
+
     db.collection("users").document(data["reviewed"]).set({
         "rating" : { data["reviewer"] : data["rating"] },
         "net_rating" : new_rating
