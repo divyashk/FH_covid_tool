@@ -313,7 +313,11 @@
             city: document.getElementById("add-autocomplete-input-city").value.toLowerCase(),
             state: document.getElementById("add-autocomplete-input-state").value.toLowerCase(),
             address: document.getElementById("add-autocomplete-input-address").value,
-            itemId : "{{data['id']}}"
+        }
+
+        const itemId = "{{data['id']}}";
+        if (itemId) {
+            data["itemId"] = itemId;
         }
 
         var payload = {
