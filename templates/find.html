@@ -57,7 +57,36 @@
     #post-comments .comment p {
         margin: 2px 0;
     }
+
+      /* Style tab links */
+    .tablink {
+        color: white;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        font-size: 17px;
+        width: 100%;
+        background-color: var(--lightr-shade);
+    }
+
+    .tablink:hover {
+        background-color: var(--normal-shade);
+        ;
+    }
+
+    /* Style the tab content (and add height:100% for full page content) */
+    .tabcontent {
+        color: black;
+        display: none;
+        padding: 32px 20px;
+        height: 100%;
+    }
+
 </style>
+<link rel="stylesheet" href="/static/frontend/css/comments.css">
+
 {% endblock %}
 
 {% block body %}
@@ -139,40 +168,199 @@
 
     <!-- Modal Structure -->
     <div id="modal1" class="modal">
-        <div class="modal-content">
-            <h4>Modal Header</h4>
-            <p>A bunch of text</p>
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">
-                <span class="material-icons">close</span>
-            </a>
+        <div class='wrapper-tab-btn-link'>
+            <ul style="display: inline-flex;">
+                    <li><button class="tablink" onclick="openPage('reviews-tab', this)" id="defaultOpen">Reviews</button></li>
+                    <li><button class="tablink" id="leads-tab" onclick="openPage('upvotes-tab', this)"> Upvotes </button></li>
+            </ul>
+        </div>
+        <div id="reviews-tab" class="tabcontent">
+            
+
+            <div class="modal-content">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">
+                    <span class="material-icons">close</span>
+                </a>
+            </div>
+
+        
+            <div id="live-chat">
+                <div class="chat">
+                    <div id="post-comments" class="chat-history">
+                    
+                    </div> 
+                </div>
+            </div>
+        
+            <div id="comment-load" class="progress" style="margin: 0.5rem; display: none;">
+                <div class="indeterminate"></div>
+            </div>
+            <form onsubmit="handleSendComment(event)" class="modal-footer">
+                <div class="input-field inline">
+                    <input id="comment_inline" type="text" class="validate">
+                    <label for="comment_inline">Enter comment</label>
+                </div>
+                <button type="submit" class="submit waves-effect waves-green btn-flat">
+                    <span class="material-icons" style="vertical-align: bottom;"> send </span>
+                </button>
+            </form>
+        
         </div>
 
-        <div id="post-comments">
-            <div class="comment">
-                <p>Priyam Seth </p>
-                <small>Hello world</small>
+        <div id="upvotes-tab" class="tabcontent">
+            <div class="modal-content">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">
+                    <span class="material-icons">close</span>
+                </a>
             </div>
-            <div class="comment">
-                <p>Pranshu Kharkwal </p>
-                <small>Hello world</small>
-            </div>
-            <div class="comment">
-                <p>Divyasheel Kumar </p>
-                <small>Hello world</small>
+            <div class="upvotes-tab-wrapper">
+                <div class="votes-tab-names">
+                    <h4>Upvoted by</h4>
+                    <div style="overflow-y: scroll; height:100%">
+                        <ul class="widget-list" id="managers">
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #1 <span>481 followers</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #2 <span>5162 followers</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+                <div class="votes-tab-names">
+                    <h4>Downvoted by</h4>
+                    <div style="overflow-y: scroll; height:100%">
+                        <ul class="widget-list" id="managers">
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #1 <span>481 followers</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #2 <span>5162 followers</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li><li>
+                            <a class="widget-list-link">
+                            <img src="http://www.gravatar.com/avatar/47?f=y&amp;s=64&amp;d=identicon">
+                            Manager #3 <span>342 followers</span>
+                            </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
             </div>
         </div>
-        <div id="comment-load" class="progress" style="margin: 0.5rem; display: none;">
-            <div class="indeterminate"></div>
-        </div>
-        <form onsubmit="handleSendComment(event)" class="modal-footer">
-            <div class="input-field inline">
-                <input id="comment_inline" type="text" class="validate">
-                <label for="comment_inline">Enter comment</label>
-            </div>
-            <button type="submit" class="submit waves-effect waves-green btn-flat">
-                <span class="material-icons" style="vertical-align: bottom;"> send </span>
-            </button>
-        </form>
+
+
+        
     </div>
 
 </div> <!-- End of main -->
@@ -183,6 +371,53 @@
 {% block js %}
 
 <script>
+    if (location.hash == "#upvotes-tab") {
+        document.getElementById("#upvotes-tab").click();
+    } else {
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+    }
+
+
+    function openPage(pageName, elmnt) {
+        console.log("Open page callsed");
+
+        // Hide all elements with class="tabcontent" by default */
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        }
+
+        location.hash = pageName;
+
+        // Remove the background color of all tablinks/buttons
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].style.backgroundColor = "";
+        }
+
+        // Show the specific tab content
+        document.getElementById(pageName).style.display = "block";
+
+        // Add the specific color to the button used to open the tab content
+        elmnt.style.backgroundColor = "#26a69a";
+    }
+
+
+    $('#live-chat header').on('click', function() {
+
+		$('.chat').slideToggle(300, 'swing');
+		$('.chat-message-counter').fadeToggle(300, 'swing');
+
+	});
+
+	$('.chat-close').on('click', function(e) {
+
+		e.preventDefault();
+		$('#live-chat').fadeOut(300);
+
+	});
 
     const username = "{{ username }}";
     var leadsData = [];
@@ -247,14 +482,28 @@
                     console.log("updatation", doc.data());
 
                     var toAdd = "";
-
+                    
                     if (doc.data().comments) {
                         doc.data().comments.forEach((comment, index) => {
-                            toAdd += `
-                            <div class="comment">
-                                <p> ` + comment.poster + ` </p>
-                                <small> ` + comment.comment + ` </small>
-                            </div>`;
+                            toAdd += 
+                            `<div class="chat-message clearfix">
+					
+                                <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
+
+                                <div class="chat-message-content clearfix">
+                                    
+                                    <span class="chat-time">`+  "13:55" + `</span>
+
+                                    <h5 class='chat-poster' > ` + comment.poster + `</h5>
+
+                                    <p class='chat-comment' >` + comment.comment + `</p>
+
+                                </div> <!-- end chat-message-content -->
+
+                            </div> <!-- end chat-message -->
+
+                            <hr>
+                        `;
                         })
                     } else {
                         toAdd += "No comments yet!";
@@ -270,7 +519,7 @@
             // Find the leadId from the global selected lead id
             e.preventDefault();
 
-            console.log("submti bnutton called", e);
+            console.log("submit button called", e);
             $("#comment-load").css("display", "block");
 
             // Make API Request 
@@ -619,6 +868,7 @@
 
         console.log("Submitted!");
     });
+
 
 </script>
 
