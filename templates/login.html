@@ -49,6 +49,13 @@
     .card .card-content {
         padding: 32px;
     }
+
+    #pp{
+        width:100px;
+        height:100px;
+        border-radius:50%;
+        margin:auto;
+    }
 </style>
 {% endblock %}
 
@@ -82,7 +89,8 @@
             <p>Account with this username exists, enter the password to get loggined.</p>
 
             <div id="us-just-show-1" class="center-align">
-                <i class="material-icons" style="font-size: 100px; color: #26a69a;">account_circle</i>
+                <!-- <i class="material-icons" style="font-size: 100px; color: #26a69a;">account_circle</i> -->
+                <img id = "pp" src="">
                 <label id="user_name_1" style="font-size: 1.8rem;" for="user_name_1">UserName</label>
             </div>
 
@@ -134,9 +142,20 @@
                 <label for="confirm-pass">Confirm Password</label>
             </div>
 
+            <div class="file-field input-field">
+                <div class="btn">
+                  <span>Profile Picture</span>
+                  <input id = "profile-picture" type="file" accept="image/*">
+                </div>
+                <div class="file-path-wrapper">
+                  <input id = "pp-input" class="file-path validate" type="text">
+                </div>
+              </div>
+
             <div id="loading-anim-newuser" class="progress">
                 <div class="indeterminate"></div>
             </div>
+
         </div>
         <div class="card-action">
             <a id="back-btn2">Back</a>
@@ -195,7 +214,8 @@
                     byId('password-container').style.display = "block";
                     byId('login-container').style.display = "none";
                     byId('pass').focus();
-
+                    byId('pp').src = res['image'];
+                    // Write code to show res['image']
                 } else {
 
                     if (res['err_code'] === '1') {
@@ -292,6 +312,44 @@
         byId('login-container').style.display = "block";
     }
 
+    function callapi(url){
+        byId('loading-anim-newuser').style.visibility = "visible";
+        const data = {
+            username: window.userNameUsed,
+            password: byId("new-pass").value,
+            name: byId("new-name").value,
+            phone: byId("new-phone").value,
+            image: url
+        }
+
+        var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }
+
+        fetch('/register', payload)
+            .then(res => res.json())
+            .then(res => {
+                console.log('Yes, sign up success', res);
+                if (res['success']) {
+                    location.reload();
+                } else {
+                    alert("CREATE NEW Accout Failed!")
+                }
+
+            })
+            .catch(err => {
+                console.log("Error came in new user api");
+
+            }).finally(val => {
+                byId("loading-anim-newuser").visibility = "hidden";
+            })
+        console.log("Submitted!");
+        }
+
     function tryNewAccount(e) {
         e.preventDefault();
 
@@ -319,49 +377,25 @@
             return false;
         }
 
-        byId('loading-anim-newuser').style.visibility = "visible";
-
-        const data = {
-            username: window.userNameUsed,
-            password: byId("new-pass").value,
-            name: byId("new-name").value,
-            phone: byId("new-phone").value
+        if (!byId('profile-picture').value) {
+            byId('profile-picture').classList.add('invalid');
+            byId('pp-input').classList.add('invalid');
+            byId('profile-picture').focus();
+            byId('pp-input').focus();
+            return false;
         }
-
-        var payload = {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        }
-
-        fetch('/register', payload)
-            .then(res => res.json())
-            .then(res => {
-                console.log('Yes, sign up success', res);
-
-                if (res['success']) {
-                    location.reload();
-                } else {
-                    alert("CREATE NEW Accout Failed!")
-                }
-
-            })
-            .catch(err => {
-                console.log("Error came in new user api");
-
-            }).finally(val => {
-                byId("loading-anim-newuser").visibility = "hidden";
-            })
-
-
-        console.log("Submitted!");
+        const ref = firebase.storage().ref();
+        const file = document.querySelector('#profile-picture').files[0];
+        const name = (+new Date()) + '-' + file.name;
+        const metadata = { contentType: file.type };
+        const task = ref.child(name).put(file, metadata);
+        task.then(snapshot => snapshot.ref.getDownloadURL())
+            .then(url => {console.log(url); callapi(url)})
     }
 
     byId("newuser-container").onsubmit = tryNewAccount;
-
     byId("create-btn").onclick = tryNewAccount;
+
 </script>
 
 {% endblock %}

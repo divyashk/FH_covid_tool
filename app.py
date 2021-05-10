@@ -63,9 +63,10 @@ def register_user():
     - username
     - Rest any other details like name, etc
     '''
-
+    print("Hello")
     data = request.json
-
+    image = data['image']
+    # print(image)
     compulsary_items = ["username", "password"]
 
     for item in compulsary_items:
@@ -216,7 +217,7 @@ def check_if_username_exists():
 
         if userid_ref.exists:
             print("username exists")
-            return jsonify(success=True)
+            return jsonify(success=True , image=userid_ref.to_dict()["image"])
         else:
             print("username doesn't exists")
             return jsonify(success=False, err_code='1')
