@@ -185,7 +185,7 @@
     var inp_item = $('#add-autocomplete-input-item');
     var inp_quantity = $('#add-autocomplete-input-quantity');
     var inp_address = $("#add-autocomplete-input-address");
-
+    
         
 
 
@@ -312,7 +312,8 @@
             quantity: document.getElementById("add-autocomplete-input-quantity").value.toLowerCase(),
             city: document.getElementById("add-autocomplete-input-city").value.toLowerCase(),
             state: document.getElementById("add-autocomplete-input-state").value.toLowerCase(),
-            address: document.getElementById("add-autocomplete-input-address").value
+            address: document.getElementById("add-autocomplete-input-address").value,
+            itemId : "{{data['id']}}"
         }
 
         var payload = {

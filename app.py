@@ -353,6 +353,9 @@ def add():
         dict_pass["city"] = request.args.get('city');
         dict_pass["name"] = request.args.get('name');
         dict_pass["item_name"] = request.args.get('item');
+        dict_pass["state"] = request.args.get('state');
+        dict_pass["quantity"] = request.args.get('qty');
+
         for x in dict_pass.keys():
             if dict_pass[x] is None:
                 print("missing value - ",x);
