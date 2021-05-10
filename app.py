@@ -63,9 +63,10 @@ def register_user():
     - username
     - Rest any other details like name, etc
     '''
-
+    print("Hello")
     data = request.json
-
+    image = data['image']
+    # print(image)
     compulsary_items = ["username", "password"]
 
     for item in compulsary_items:
@@ -216,7 +217,10 @@ def check_if_username_exists():
 
         if userid_ref.exists:
             print("username exists")
-            return jsonify(success=True)
+            if "image" in userid_ref.to_dict():
+                return jsonify(success=True , image=userid_ref.to_dict()["image"])
+            else:
+                return jsonify(success=True, image="")
         else:
             print("username doesn't exists")
             return jsonify(success=False, err_code='1')
@@ -255,6 +259,28 @@ def get_states():
         states.append(collection.id)
 
     return jsonify(success=True, states=states)
+
+
+@app.route("/update_rating", methods=['POST'])
+def update_rating():
+    '''
+    We need reviewer and reviewed in this
+    Alsot he rating given by him
+    '''
+    data = request.json 
+    ndata = db.collection("users").document(data["reviewed"]).get().to_dict()
+    ln = len(ndata["rating"])
+    cur = ndata["net_rating"]
+    new_rating = ((cur*ln) + data["rating"]) / (ln + 1)
+    if data["reviewer"] in ndata["rating"]:
+        new_rating = (cur*ln + data["rating"] - ndata["rating"][data["reviewer"]]) / ln
+    db.collection("users").document(data["reviewed"]).set({
+        "rating" : { data["reviewer"] : data["rating"] },
+        "net_rating" : new_rating
+    }, merge=True)
+
+    return jsonify(success=True)
+
 
 """
 Routes
@@ -311,12 +337,17 @@ def login_register():
 def profile():
     if session['username']:
         username= session['username']
-    return render_template("profile.html", username = username, isMe="yes")
+    return render_template("profile.html", username = username, isMe="yes", loginuser=username)
 
 @app.route('/profile/<id>')
 def profile_others(id):
     print("for id", id)
-    return render_template("profile.html", username = id, isMe="no")
+
+    username = ""
+    if 'username' in session:
+        username = session['username']
+
+    return render_template("profile.html", username = id, isMe="no", loginuser=username)
 
 
 @app.route('/logout')

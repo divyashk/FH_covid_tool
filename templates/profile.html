@@ -112,9 +112,17 @@
   }
 
   .rating {
+    color: orange;
+  }
+
+  .rating-input {
+    color: orange;
+    cursor: pointer;
+  }
+
+  .profile-right {
     text-align: right;
     margin-top: 32px;
-    color: orange;
   }
 </style>
 
@@ -140,28 +148,17 @@
           <div class="profile-left col s6">
             <div class="asked_profile">
               <div class="asked_profile-content">
-                <h3 id="show-name-here"></h3>
+                <img src="" id="pp" style="width:100%">
+                <h3 id="show-name-here" style="margin-bottom: 4px;"></h3>
+                <div class="rating"></div>
               </div>
             </div>
             <p id="show-phone-here"> <i class="material-icons prefix" style="vertical-align: middle;">phone</i></p>
           </div>
           <div class="profile-right col s6">
-            <div class="rating">
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star_border
-                </span>
+            <div id="rat-inp-con">
+              Ratings given by me
+              <div class="rating-input"></div>
             </div>
           </div>
         </div>
@@ -222,6 +219,7 @@
   const db = firebase.firestore();
   const username = "{{username}}";
   const isMe = "{{ isMe }}";
+  const loginuser = "{{ loginuser }}";
 
   var leadsData = [];
 
@@ -301,6 +299,7 @@
               edit
           </span>
       </div>
+      <div class="up-vote-count">` + val.net_upvotes + `</div>
       <div class="remove-item" onclick="handleRemove(` + index + `, -1)">
           <span class="material-icons color-red">
               delete
@@ -335,6 +334,26 @@
   }
 
 
+  getRatingString = (start = 0, end = 4) => {
+    let ratingString = "";
+
+    for (let i = 0; i < start; i++) {
+      ratingString += `
+        <span class="material-icons">
+          star
+        </span>`
+    }
+
+    for (let i = start; i <= end; i++) {
+      ratingString += `
+        <span class="material-icons">
+          star_border
+        </span>`
+    }
+
+    return ratingString;
+  }
+
   db.collection("users").doc(username).get()
     .then(doc => {
       console.log("Doc", doc.data());
@@ -343,6 +362,67 @@
 
       $("#show-name-here").html(data.name);
       $("#show-phone-here").html(` <i class="material-icons prefix" style="vertical-align: middle;">phone</i> ` + data.phone + ``);
+      $("#pp").prop("src" , data.image);
+      // Ratings
+      if (data.net_rating) {
+        $(".rating").html(getRatingString(data.net_rating));
+      } else {
+        $(".rating").html(getRatingString());
+      }
+
+      if (data.rating && loginuser && data.rating[loginuser]) {
+        $(".rating-input").html(getRatingString(data.rating[loginuser]));
+      } else {
+        $(".rating-input").html(getRatingString());
+      }
+
+      // Now loop in rating input
+      const stars = document.getElementsByClassName("rating-input")[0].getElementsByTagName("span");
+
+      console.log("stars", stars);
+      for (let i = 0; i < stars.length; i++) {
+        stars[i].onclick = function () {
+          console.log("give rating", i + 1);
+
+          // Sending api request to backend to update rating
+
+          pdata = {
+            rating: (i+1),
+            reviewer: loginuser,
+            reviewed: username
+          }
+          var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pdata),
+          }
+
+          fetch('/update_rating', payload)
+            .then(res => res.json())
+            .then(res => {
+              console.log('Get leads success', res);
+              if (res['success']) {
+                console.log("successful request");
+                location.reload();
+              }
+            })
+            .catch(err => {
+              console.log("Error in get_leads_api");
+            });
+          console.log("Submitted!");
+
+
+        }
+      }
+
+
+      // hide the rating by me for not logined
+      if (!loginuser) {
+        $("#rat-inp-con").css("display", "none");
+      }
+
 
       // Leads should be present
       if (!data.leads) {
