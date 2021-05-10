@@ -92,7 +92,7 @@
 
     <div id="leads-container" style="display: none;">
         <div style="display: flex;">
-            <h4>Oxygen Clinders</h4>
+            <h4 id="leads-heading">Oxygen Clinders</h4>
             <div style="margin-left: auto; margin-top: 1.52rem;">
                 <a class="btn waves-effect waves-light" href="/">Search another</a>
             </div>
@@ -147,6 +147,9 @@
 
         $("#autocomplete-input-item").on('change', function () {
             const itemSelected = $(this).val();
+
+            // Update the heading
+            byId("leads-heading").innerHTML = itemSelected;
 
             globalItem = itemSelected;
 
@@ -301,17 +304,17 @@
         console.log("Find button clicked", e);
 
         // Find the data from the UI
-
-        // data = {
-        //     item: 'oxygen cylinder',
-        //     state: 'uttar pradesh',
-        //     city: 'ghaziabad',
-        // }
-
         data = {
             item: byId("autocomplete-input-item").value,
             state: byId("autocomplete-input-state").value,
             city: byId("autocomplete-input-city").value,
+        }
+
+        // Do comment these lines
+        data = {
+            item: 'oxygen cylinder',
+            state: 'uttar pradesh',
+            city: 'ghaziabad',
         }
 
         if (!data.item) {
@@ -385,9 +388,12 @@
                                 <div class="card-content">
                                     <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
                                     <p>` + val.name + `</p>
-                                    <a target="_none" rel="noopener" href="https://www.google.com/maps/search/` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `">` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</a>
+                                    <div class="address" style="margin-top: 12px">
+                                        <a target="_none" rel="noopener" href="https://www.google.com/maps/search/` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `">` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + ` <span class="material-icons my-loc-icon">location_on</span> ` + `</a>
+                                    </div>
                                 </div>
                                 <div class="card-action">
+                                    <i class="material-icons prefix" style="vertical-align: middle;">phone</i>
                                     ` + val.contact + `
                                 </div>
                             </div>

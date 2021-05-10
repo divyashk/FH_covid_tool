@@ -150,3 +150,8 @@ nav ul a {
 #leads-show {
     margin-top: 32px;
 }
+
+.my-loc-icon {
+    vertical-align: bottom;
+    font-size: 20px;
+}

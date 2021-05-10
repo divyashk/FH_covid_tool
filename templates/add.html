@@ -28,24 +28,24 @@
 
 
 
-  <div id="add_item">
+<div id="add_item">
     <div id="add_item_heading">
         <h4 class="center">Please enter the details for the item</h4>
     </div>
-   
-   <div class="row">
 
-        <div class="col s12">
+    <div class="row">
+
+        <div class="col s6">
             <div class="row">
                 <div class="input-field col s12">
-                <i class="material-icons prefix">account_circle</i>
-                <input id="add-input-name" type="text" class="validate">
-                <label for="add-input-name">First Name</label>
+                    <i class="material-icons prefix">account_circle</i>
+                    <input id="add-input-name" type="text" class="validate">
+                    <label for="add-input-name">First Name</label>
                 </div>
             </div>
         </div>
 
-        <div class="col s12">
+        <div class="col s6">
             <div class="row">
                 <div class="input-field col s12">
                     <i class="material-icons prefix">phone</i>
@@ -58,9 +58,9 @@
         <div class="col s12">
             <div class="row">
                 <div class="input-field col s12">
-                <i class="material-icons prefix">dashboard_customize</i>
-                <input type="text" id="add-autocomplete-input-item" class="autocomplete">
-                <label for="add-autocomplete-input-item">Item</label>
+                    <i class="material-icons prefix">dashboard_customize</i>
+                    <input type="text" id="add-autocomplete-input-item" class="autocomplete">
+                    <label for="add-autocomplete-input-item">Item</label>
                 </div>
             </div>
         </div>
@@ -68,19 +68,9 @@
         <div class="col s12">
             <div class="row">
                 <div class="input-field col s12">
-                <i class="material-icons prefix">tag</i>
-                <input type="number" id="add-autocomplete-input-quantity" class="autocomplete">
-                <label for="add-autocomplete-input-quantity">Quantity</label>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col s12">
-            <div class="row">
-                <div class="input-field col s12">
-                <i class="material-icons prefix">map</i>
-                <input type="text" id="add-autocomplete-input-state" class="autocomplete">
-                <label for="add-autocomplete-input-state">State</label>
+                    <i class="material-icons prefix">tag</i>
+                    <input type="number" id="add-autocomplete-input-quantity" class="autocomplete">
+                    <label for="add-autocomplete-input-quantity">Quantity</label>
                 </div>
             </div>
         </div>
@@ -88,217 +78,259 @@
         <div class="col s12">
             <div class="row">
                 <div class="input-field col s12">
-                <i class="material-icons prefix">location_on</i>
-                <input type="text" id="add-autocomplete-input-city" class="autocomplete">
-                <label for="add-autocomplete-input-city">City</label>
+                    <i class="material-icons prefix">map</i>
+                    <input type="text" id="add-autocomplete-input-state" class="autocomplete">
+                    <label for="add-autocomplete-input-state">State</label>
                 </div>
             </div>
         </div>
 
-        
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">location_on</i>
+                    <input type="text" id="add-autocomplete-input-city" class="autocomplete">
+                    <label for="add-autocomplete-input-city">City</label>
+                </div>
+            </div>
+        </div>
 
-        
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">home</i>
+                    <input type="text" id="add-autocomplete-input-address" class="autocomplete">
+                    <label for="add-autocomplete-input-address">Adress</label>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <div id="loading-anim" style="text-align: center; display: none;">
+        <div class="preloader-wrapper small active">
+            <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <a class="waves-effect waves-light btn" id="submit-add-button">Add</a>
 
-    
+</div>
 
-  </div>
 {% endblock %}
 
 {% block js %}
-    <script>
-        
-        
-        // for the POST request
-        var payload = {
-            method: 'POST', // or 'PUT'
-            headers: {
-                'Content-Type': 'application/json',
-            }
+<script>
+
+    function showAimaation() {
+        $("#loading-anim").css("display", "block");
+        $("#submit-add-button").css("display", "none");
+    }
+
+    function hideAnimation() {
+        $("#loading-anim").css("display", "none");
+        $("#submit-add-button").css("display", "block");
+    }
+
+    // for the POST request
+    var payload = {
+        method: 'POST', // or 'PUT'
+        headers: {
+            'Content-Type': 'application/json',
         }
-        // Populating the name and telephone details with the logged in user's details, can be changed though.
-        fetch('/user_info', payload)
+    }
+
+    // Populating the name and telephone details with the logged in user's details, can be changed though.
+    fetch('/user_info', payload)
         .then(res => res.json())
         .then(res => {
             const user_info = res['user_info'];
             document.getElementById('add-input-name').value = user_info['name'];
             document.getElementById('add-input-contact').value = user_info['contact'];
-            $(document).ready(function() {
+            $(document).ready(function () {
                 M.updateTextFields();
             });
         })
         .catch(err => {
             console.log("Error came in api");
         });
-        var inp_state = $('#add-autocomplete-input-state');
-        var inp_city = $('#add-autocomplete-input-city');
-        var inp_item = $('#add-autocomplete-input-item');
-        var inp_quantity = $('#add-autocomplete-input-quantity');
-        
-        
+    var inp_state = $('#add-autocomplete-input-state');
+    var inp_city = $('#add-autocomplete-input-city');
+    var inp_item = $('#add-autocomplete-input-item');
+    var inp_quantity = $('#add-autocomplete-input-quantity');
+    var inp_address = $("#add-autocomplete-input-address");
 
-        $(document).ready(function(){
-            inp_state.autocomplete({
+
+
+    $(document).ready(function () {
+        inp_state.autocomplete({
             data: give_states(),
-            });
-
-            $('#add-autocomplete-input-item').autocomplete({
-            data: {"Oxygen Cylinder": null,
-                    "Plasma":null,
-                    "Oxygen Concentrator":null,
-                    "Hospital Beds":null,
-                    "Plasma A+":null,
-                    "Plasma AB+":null,
-                    "Plasma B+":null,
-                    "Plasma O+":null,
-                    "Plasma A-":null,
-                    "Plasma AB-":null,
-                    "Plasma O-":null,
-            },
-            });
-
-            inp_state.on("change keyup paste", function(){
-                $('#add-autocomplete-input-city').autocomplete({
-                    data: find_cities(document.getElementById('add-autocomplete-input-state').value.toLowerCase()),
-                });
-            });
-            // checking if the state-input is correct at input
-            inp_state.on("change keyup paste", function(){
-                if (!check_state(document.getElementById('add-autocomplete-input-state').value)){
-                     document.getElementById('add-autocomplete-input-state').classList.add('invalid');
-                    document.getElementById('add-autocomplete-input-state').focus();
-                }
-                else{
-                    document.getElementById('add-autocomplete-input-state').classList.remove('invalid');
-                    
-                }
-            });
-
-            // checking if the city-input is correct at input
-            inp_city.on("change keyup paste", function(){
-                if (!check_city(document.getElementById('add-autocomplete-input-city').value, document.getElementById('add-autocomplete-input-state').value)){
-                     document.getElementById('add-autocomplete-input-city').classList.add('invalid');
-                    document.getElementById('add-autocomplete-input-city').focus();
-                }
-                else{
-                    document.getElementById('add-autocomplete-input-city').classList.remove('invalid');
-                    
-                }
-            });
-
-            // checking if the item-input is correct at input
-            inp_item.on("change keyup paste", function(){
-                if (!check_item(document.getElementById('add-autocomplete-input-item').value)){
-                     document.getElementById('add-autocomplete-input-item').classList.add('invalid');
-                    document.getElementById('add-autocomplete-input-item').focus();
-                }
-                else{
-                    document.getElementById('add-autocomplete-input-item').classList.remove('invalid');
-                    
-                }
-            });
-
-            // checking if the quantity-input is correct at input
-            inp_quantity.on("change keyup paste", function(){
-                if (isNaN(document.getElementById('add-autocomplete-input-quantity').value)){
-                    document.getElementById('add-autocomplete-input-quantity').classList.add('invalid');
-                    document.getElementById('add-autocomplete-input-quantity').focus();
-                }
-                else{
-                    document.getElementById('add-autocomplete-input-quantity').classList.remove('invalid');
-                   
-                }
-            }); 
-
-
-
         });
 
+        $('#add-autocomplete-input-item').autocomplete({
+            data: {
+                "Oxygen Cylinder": null,
+                "Plasma": null,
+                "Oxygen Concentrator": null,
+                "Hospital Beds": null,
+                "Plasma A+": null,
+                "Plasma AB+": null,
+                "Plasma B+": null,
+                "Plasma O+": null,
+                "Plasma A-": null,
+                "Plasma AB-": null,
+                "Plasma O-": null,
+            },
+        });
 
-
-        function addnewitem(e) {
-        
-            e.preventDefault();
-
-            if (!document.getElementById('add-input-name').value) {
-                document.getElementById('add-input-name').classList.add('invalid');
-                document.getElementById('add-input-name').focus();
-                return false;
-            }
-
-            if (!document.getElementById('add-input-contact').value) {
-                document.getElementById('add-input-contact').classList.add('invalid');
-                document.getElementById('add-input-contact').focus();
-                return false;
-            }
-            
-            if (!document.getElementById('add-autocomplete-input-item').value) {
-                document.getElementById('add-autocomplete-input-item').classList.add('invalid');
-                document.getElementById('add-autocomplete-input-item').focus();
-                return false;
-            }
-
-            if (!document.getElementById('add-autocomplete-input-quantity').value) {
-                document.getElementById('add-autocomplete-input-quantity').classList.add('invalid');
-                document.getElementById('add-autocomplete-input-quantity').focus();
-                return false;
-            }
-
-            if (!document.getElementById('add-autocomplete-input-state').value) {
+        inp_state.on("change keyup paste", function () {
+            $('#add-autocomplete-input-city').autocomplete({
+                data: find_cities(document.getElementById('add-autocomplete-input-state').value.toLowerCase()),
+            });
+        });
+        // checking if the state-input is correct at input
+        inp_state.on("change keyup paste", function () {
+            if (!check_state(document.getElementById('add-autocomplete-input-state').value)) {
                 document.getElementById('add-autocomplete-input-state').classList.add('invalid');
                 document.getElementById('add-autocomplete-input-state').focus();
-                return false;
             }
-            if (!document.getElementById('add-autocomplete-input-city').value) {
+            else {
+                document.getElementById('add-autocomplete-input-state').classList.remove('invalid');
+
+            }
+        });
+
+        // checking if the city-input is correct at input
+        inp_city.on("change keyup paste", function () {
+            if (!check_city(document.getElementById('add-autocomplete-input-city').value, document.getElementById('add-autocomplete-input-state').value)) {
                 document.getElementById('add-autocomplete-input-city').classList.add('invalid');
                 document.getElementById('add-autocomplete-input-city').focus();
-                return false;
             }
+            else {
+                document.getElementById('add-autocomplete-input-city').classList.remove('invalid');
 
-
-            const data = {
-                name: document.getElementById("add-input-name").value.toLowerCase(),
-                contact: document.getElementById("add-input-contact").value.toLowerCase(),
-                item: document.getElementById("add-autocomplete-input-item").value.toLowerCase(),
-                quantity: document.getElementById("add-autocomplete-input-quantity").value.toLowerCase(),
-                city: document.getElementById("add-autocomplete-input-city").value.toLowerCase(),
-                state: document.getElementById("add-autocomplete-input-state").value.toLowerCase(),
             }
+        });
 
-            var payload = {
-                method: 'POST', // or 'PUT'
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+        // checking if the item-input is correct at input
+        inp_item.on("change keyup paste", function () {
+            if (!check_item(document.getElementById('add-autocomplete-input-item').value)) {
+                document.getElementById('add-autocomplete-input-item').classList.add('invalid');
+                document.getElementById('add-autocomplete-input-item').focus();
             }
+            else {
+                document.getElementById('add-autocomplete-input-item').classList.remove('invalid');
 
-            fetch('/add_item_api', payload)
-                .then(res => res.json())
-                .then(res => {
-                    console.log('adding item success', res);
+            }
+        });
 
-                    if (res['success']) {
-                        location.reload();
-                    } 
+        // checking if the quantity-input is correct at input
+        inp_quantity.on("change keyup paste", function () {
+            if (isNaN(document.getElementById('add-autocomplete-input-quantity').value)) {
+                document.getElementById('add-autocomplete-input-quantity').classList.add('invalid');
+                document.getElementById('add-autocomplete-input-quantity').focus();
+            }
+            else {
+                document.getElementById('add-autocomplete-input-quantity').classList.remove('invalid');
 
-                })
-                .catch(err => {
-                    console.log("Error came in new user api");
+            }
+        });
+    }); // End of ready
 
-                });
 
-            console.log("Submitted!");
+
+    function addnewitem(e) {
+        e.preventDefault();
+
+        if (!document.getElementById('add-input-name').value) {
+            document.getElementById('add-input-name').classList.add('invalid');
+            document.getElementById('add-input-name').focus();
+            return false;
         }
+
+        if (!document.getElementById('add-input-contact').value) {
+            document.getElementById('add-input-contact').classList.add('invalid');
+            document.getElementById('add-input-contact').focus();
+            return false;
+        }
+
+        if (!document.getElementById('add-autocomplete-input-item').value) {
+            document.getElementById('add-autocomplete-input-item').classList.add('invalid');
+            document.getElementById('add-autocomplete-input-item').focus();
+            return false;
+        }
+
+        if (!document.getElementById('add-autocomplete-input-quantity').value) {
+            document.getElementById('add-autocomplete-input-quantity').classList.add('invalid');
+            document.getElementById('add-autocomplete-input-quantity').focus();
+            return false;
+        }
+
+        if (!document.getElementById('add-autocomplete-input-state').value) {
+            document.getElementById('add-autocomplete-input-state').classList.add('invalid');
+            document.getElementById('add-autocomplete-input-state').focus();
+            return false;
+        }
+        if (!document.getElementById('add-autocomplete-input-city').value) {
+            document.getElementById('add-autocomplete-input-city').classList.add('invalid');
+            document.getElementById('add-autocomplete-input-city').focus();
+            return false;
+        }
+
+
+        const data = {
+            name: document.getElementById("add-input-name").value.toLowerCase(),
+            contact: document.getElementById("add-input-contact").value.toLowerCase(),
+            item: document.getElementById("add-autocomplete-input-item").value.toLowerCase(),
+            quantity: document.getElementById("add-autocomplete-input-quantity").value.toLowerCase(),
+            city: document.getElementById("add-autocomplete-input-city").value.toLowerCase(),
+            state: document.getElementById("add-autocomplete-input-state").value.toLowerCase(),
+            address: document.getElementById("add-autocomplete-input-address").value
+        }
+
+        var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }
+
+        showAimaation();
+
+        fetch('/add_item_api', payload)
+            .then(res => res.json())
+            .then(res => {
+                console.log('adding item success', res);
+
+                if (res['success']) {
+                    location.reload();
+                }
+
+            })
+            .catch(err => {
+                console.log("Error came in new user api");
+
+            }).finally(() => {
+                hideAnimation();
+            });
+
+        console.log("Submitted!");
+    }
 
     document.getElementById("submit-add-button").onclick = addnewitem;
 
-        
-
-    
-
-    </script>
+</script>
 
 
 

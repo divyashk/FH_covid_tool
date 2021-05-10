@@ -107,7 +107,7 @@
   .tabcontent {
     color: black;
     display: none;
-    padding: 100px 20px;
+    padding: 32px 20px;
     height: 100%;
   }
 </style>
@@ -135,7 +135,7 @@
             <h3 id="show-name-here"></h3>
           </div>
         </div>
-        <p>8437151118</p>
+        <p id="show-phone-here"> <i class="material-icons prefix" style="vertical-align: middle;">phone</i></p>
       </div>
 
       <div id="About" class="tabcontent">
@@ -210,14 +210,17 @@
       <div class="col s12 m6">
           <div class="card horizontal">                      
               <div class="card-stacked">
-                  <div class="card-content">
-                    <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
-                    <p>` + val.name + `</p>
-                    <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
+                <div class="card-content">
+                  <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
+                  <p>` + val.name + `</p>
+                  <div class="address" style="margin-top: 12px">
+                      <a target="_none" rel="noopener" href="https://www.google.com/maps/search/` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `">` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + ` <span class="material-icons my-loc-icon">location_on</span> ` + `</a>
                   </div>
-                  <div class="card-action">
-                      ` + val.contact + `
-                  </div>
+              </div>
+              <div class="card-action">
+                  <i class="material-icons prefix" style="vertical-align: middle;">phone</i>
+                  ` + val.contact + `
+              </div>
               </div>
           </div>
       </div>
@@ -235,6 +238,7 @@
       const data = doc.data();
 
       $("#show-name-here").html(data.name);
+      $("#show-phone-here").html(` <i class="material-icons prefix" style="vertical-align: middle;">phone</i> ` + data.phone + ``);
 
       // Leads should be present
       if (!data.leads) {
