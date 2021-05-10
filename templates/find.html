@@ -306,7 +306,7 @@
     const byId = (id) => { return document.getElementById(id); }
     const db = firebase.firestore();
 
-    function showAimaation() {
+    function showAnimation() {
         $("#loading-anim").css("display", "block");
         $("#find-btn").css("display", "none");
     }
@@ -481,7 +481,7 @@
             // We need to find the number of subcollections from python
             const data = { item: itemSelected };
 
-            showAimaation();
+            showAnimation();
 
             fetch('/get_states', {
                 method: 'POST', // or 'PUT'
@@ -521,7 +521,7 @@
             const itemSelected = $(this).val();
             globalState = itemSelected;
 
-            showAimaation();
+            showAnimation();
 
             db.collection("Inventory").doc(globalItem).collection(globalState).get()
                 .then((querySnapshot) => {
