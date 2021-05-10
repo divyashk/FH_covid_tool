@@ -288,6 +288,29 @@ def update_rating():
 
     return jsonify(success=True)
 
+@app.route("/get_votes", methods=['POST'])
+def get_votes():
+    data = request.json 
+    leadId = data["leadId"]
+    ndata = db.collection("Inven").document().get().to_dict()
+    address = db.collection("references").document(leadId).get().to_dict()["address"]
+    address = address.split("/")
+    doc = db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).get().to_dict()
+    lisp = doc["votes"]
+    upvoters = []
+    downvoters = []
+    for voter in lisp:
+        dc = db.collection("users").document(voter).get().to_dict()
+        rating = None
+        if "net_rating" in dc:
+            rating = dc["net_rating"]
+        if lisp[voter] == 1:
+            upvoters.append([voter,rating])
+        elif lisp[voter] == -1:
+            downvoters.append([voter, rating])
+    print(upvoters)
+    print(downvoters)
+    return jsonify(upvoters = upvoters , downvoters = downvoters)
 
 """
 Routes
