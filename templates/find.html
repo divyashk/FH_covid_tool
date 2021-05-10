@@ -43,6 +43,20 @@
         top: 24px;
         z-index: 1004;
     }
+
+    #post-comments {
+        margin: 8px 0;
+        max-height: 400px;
+        overflow: auto;
+    }
+
+    #post-comments .comment {
+        padding: 4px 8px;
+    }
+
+    #post-comments .comment p {
+        margin: 2px 0;
+    }
 </style>
 {% endblock %}
 
@@ -133,6 +147,20 @@
             </a>
         </div>
 
+        <div id="post-comments">
+            <div class="comment">
+                <p>Priyam Seth </p>
+                <small>Hello world</small>
+            </div>
+            <div class="comment">
+                <p>Pranshu Kharkwal </p>
+                <small>Hello world</small>
+            </div>
+            <div class="comment">
+                <p>Divyasheel Kumar </p>
+                <small>Hello world</small>
+            </div>
+        </div>
         <div id="comment-load" class="progress" style="margin: 0.5rem; display: none;">
             <div class="indeterminate"></div>
         </div>
@@ -163,6 +191,8 @@
     var globalItem = "";
     var leadSelected = "";
 
+    window.firebaseCommentsListener = "";
+
     const byId = (id) => { return document.getElementById(id); }
     const db = firebase.firestore();
 
@@ -185,7 +215,16 @@
             },
         });
 
-        $('.modal').modal();
+        handleModalClose = () => {
+            console.log("Modal close");
+
+            window.firebaseCommentsListener();
+        }
+
+        $('.modal').modal({
+            onCloseStart: function () { handleModalClose(); }
+        });
+
         $('select').formSelect();
 
         $('select').on('contentChanged', function () {
@@ -200,6 +239,31 @@
 
             var instance = M.Modal.getInstance(document.getElementById("modal1"));
             instance.open();
+
+            // Do remember to close this one once you are done
+            window.firebaseCommentsListener = firebase.firestore().collection("Inventory").doc(leadsData[index].item)
+                .collection(leadsData[index].state).doc(leadsData[index].city)
+                .collection("leads").doc(leadSelected).onSnapshot(doc => {
+                    console.log("updatation", doc.data());
+
+                    var toAdd = "";
+
+                    if (doc.data().comments) {
+                        doc.data().comments.forEach((comment, index) => {
+                            toAdd += `
+                            <div class="comment">
+                                <p> ` + comment.poster + ` </p>
+                                <small> ` + comment.comment + ` </small>
+                            </div>`;
+                        })
+                    } else {
+                        toAdd += "No comments yet!";
+                    }
+
+                    $("#post-comments").html(toAdd);
+
+                });
+
         }
 
         handleSendComment = (e) => {
