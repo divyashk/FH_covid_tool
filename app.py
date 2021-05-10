@@ -256,6 +256,22 @@ def get_states():
 
     return jsonify(success=True, states=states)
 
+
+@app.route("/update_rating", methods=['POST'])
+def update_rating():
+    '''
+    We need reviewer and reviewed in this
+    Alsot he rating given by him
+    '''
+    data = request.json
+
+    db.collection("users").document(data["reviewed"]).set({
+        "rating" : { data["reviewer"] : data["rating"] },
+    }, merge=True)
+
+    return jsonify(success=True)
+
+
 """
 Routes
 """
@@ -311,12 +327,17 @@ def login_register():
 def profile():
     if session['username']:
         username= session['username']
-    return render_template("profile.html", username = username, isMe="yes")
+    return render_template("profile.html", username = username, isMe="yes", loginuser=username)
 
 @app.route('/profile/<id>')
 def profile_others(id):
     print("for id", id)
-    return render_template("profile.html", username = id, isMe="no")
+
+    username = ""
+    if 'username' in session:
+        username = session['username']
+
+    return render_template("profile.html", username = id, isMe="no", loginuser=username)
 
 
 @app.route('/logout')
