@@ -267,7 +267,25 @@
 
             console.log("vote data", data);
 
+            // Write logic for locally faster
+            const leadId = leadsData[leadIndex].leadId;
+            
+            // First update the votes
+            const leadEle = $("#lead" + leadId);
+            leadEle.find(".up-vote-count").html(data.net_upvotes + data.change_to - data.cur_status);
 
+            // Now updating the icon colors
+            leadEle.find(".upvote").removeClass("color-green");
+            leadEle.find(".downvote").removeClass("color-red");
+
+            if (data.change_to == 1) {
+                leadEle.find(".upvote").addClass("color-green");
+            } else if (data.change_to == -1) {
+                leadEle.find(".downvote").addClass("color-red");
+            }
+
+
+            // Updating server side
             var payload = {
                 method: 'POST', // or 'PUT'
                 headers: {
@@ -382,7 +400,7 @@
                 }
 
                 toAdd += `
-                    <div class="col s12 m6">
+                    <div class="col s12 m6" id="lead` + val.leadId + `">
                         <div class="card horizontal">                      
                             <div class="card-stacked">
                                 <div class="card-content">
@@ -398,8 +416,8 @@
                                 </div>
                             </div>
                             <div class="right-row">
-                                <div class="upvote" onclick="handleVote(` + index + `, 1)">
-                                    <span class="material-icons ` + upVoteClass + `">
+                                <div class="upvote ` + upVoteClass + `" onclick="handleVote(` + index + `, 1) ">
+                                    <span class="material-icons">
                                         expand_less
                                     </span>
                                 </div>
@@ -408,8 +426,8 @@
                                     ` + val.net_upvotes + `
                                  </div>
 
-                                <div class="downvote" onclick="handleVote(` + index + `, -1)">
-                                    <span class="material-icons ` + downVoteClass + `">
+                                <div class="downvote ` + downVoteClass + `" onclick="handleVote(` + index + `, -1)">
+                                    <span class="material-icons">
                                         expand_more
                                     </span>
                                 </div>
