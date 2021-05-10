@@ -1,14 +1,76 @@
-#find_loc,
+:root {
+    --normal-shade: #26a69a;
+    --lightr-shade: #4cd0c3;
+    --back-shade: #c5e5e2;
+    --box-color: rgba(255, 255, 255, 0.82);
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: var(--back-shade);
+}
+
+#just-img {
+    position: absolute;
+    height: 700px;
+    width: 1200px;
+    background-image: url("/static/03.jpg");
+    background-size:     cover;                      /* <------ */
+    background-repeat:   no-repeat;
+    background-position-x: -20%;
+    background-position-y: 20%;
+    left: -10vw;
+    bottom: 0;
+}
+
+#main {
+    z-index: 100;
+}
+
 #add_item, .profile-main
 {   
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    width: 450px;
-    margin: auto;
+    max-width: 620px;
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    margin-top: 20px;
-    
+    padding: 12px 24px 24px 24px;
+    margin: 32px auto;
+    z-index: 1;
+    background-color: var(--box-color);
+    position: relative;
+}
+
+#find_loc {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 24px 24px 24px;
+    margin: 40px auto;
+    z-index: 1;
+    background-color: var(--box-color);
+    position: relative;
+}
+
+#login-container, #password-container {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    max-width: 450px;
+    background-color: var(--box-color);
+    position: relative;
+}
+
+.card .card-action {
+    background-color: var(--box-color);
+}
+
+#newuser-container {
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 #find_loc_heading{
@@ -75,8 +137,7 @@ nav ul a {
 
 .card-head {
     font-size: 1.48rem;
-    color: #2da7ff;
-    cursor: pointer;
+    color: rgb(22, 22, 22);
 }
 
 .profile-main{
@@ -84,4 +145,8 @@ nav ul a {
     height:100vh;
     max-width: 1500px;
     margin-top: 0;
+}
+
+#leads-show {
+    margin-top: 32px;
 }

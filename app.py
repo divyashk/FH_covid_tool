@@ -283,7 +283,7 @@ def login_register():
     '''
 
     if "logged_in" in session and session["logged_in"]:
-        return redirect(url_for("add"))
+        return redirect(url_for("profile"))
 
     if request.method == 'GET':
         return render_template('login.html')

@@ -8,7 +8,7 @@
 <style>
     #main {
         display: flex;
-        height: 50vh;
+        margin-top: 32px;
         justify-content: center;
         align-items: center;
     }
@@ -45,6 +45,10 @@
         display: flex;
         flex-flow: column;
     }
+
+    .card .card-content {
+        padding: 32px;
+    }
 </style>
 {% endblock %}
 
@@ -55,7 +59,7 @@
     <form id="login-container" class="card darken-1">
         <div class="card-content">
             <span class="card-title">Login/Register to continue</span>
-            <p>Either enter your registered username or enter a new one and registration will follow<p>
+            <p> Either enter your registered username or enter a new one and registration will follow. <p>
 
         <div id="un-input" class="input-field col s6">
                 <i class="material-icons prefix">account_circle</i>
@@ -110,22 +114,22 @@
             </div>
 
             <div id="name-input" class="input-field col s6">
-                <input placeholder="Enter Your Name" id="new-name" type="text" class="validate" required>
+                <input placeholder="Enter Your Name" id="new-name" type="text" class="validate" autocomplete="name" required>
                 <label for="name">Name</label>
             </div>
 
             <div id="phone-input" class="input-field col s6">
-                <input placeholder="Enter Mobile Number" id="new-phone" type="text" class="validate" required>
+                <input placeholder="Enter Mobile Number" id="new-phone" type="text" class="validate" autocomplete="tel" required>
                 <label for="name">Phone</label>
             </div>
 
             <div id="pass-input" class="input-field col s6">
-                <input placeholder="Enter password" id="new-pass" type="password" class="validate" required>
+                <input placeholder="Enter password" id="new-pass" type="password" class="validate" autocomplete="new-password" required>
                 <label for="new-pass">Password</label>
             </div>
 
             <div id="confirm-input" class="input-field col s6">
-                <input placeholder="Enter Password second time" id="confirm-pass" type="password" class="validate"
+                <input placeholder="Enter Password second time" id="confirm-pass" type="password" autocomplete="new-password" class="validate"
                     required>
                 <label for="confirm-pass">Confirm Password</label>
             </div>
