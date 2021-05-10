@@ -267,10 +267,16 @@ def update_rating():
     We need reviewer and reviewed in this
     Alsot he rating given by him
     '''
-    data = request.json
-
+    data = request.json 
+    ndata = db.collection("users").document(data["reviewed"]).get().to_dict()
+    ln = len(ndata["rating"])
+    cur = ndata["net_rating"]
+    new_rating = ((cur*ln) + data["rating"]) / (ln + 1)
+    if data["reviewer"] in ndata["rating"]:
+        new_rating = (cur*ln + data["rating"] - ndata["rating"][data["reviewer"]]) / ln
     db.collection("users").document(data["reviewed"]).set({
         "rating" : { data["reviewer"] : data["rating"] },
+        "net_rating" : new_rating
     }, merge=True)
 
     return jsonify(success=True)
