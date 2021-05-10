@@ -1,32 +1,165 @@
-<div id = "text"> </div>
-{% block js %}
-    <script>
-    data = {
-        pincode : '144001',
-    }
-    var payload = {
-        method: 'POST', // or 'PUT'
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+{% extends 'layouts/base.html' %}
+
+{% block css %}
+<style>
+    #header {
+        margin-bottom: 24px;
+        display: flex;
+        flex-flow: row;
     }
 
-    fetch('/vaccine', payload)
-        .then(res => res.json())
-        .then(res => {
-            console.log(res)
-            document.getElementById("text").innerHTML = res["message"]
-            if (res['success']) {
-                document.getElementById("text").innerHTML += res["output"]
-                console.log("successful request")
-            }
-        })
-        .catch(err => {
-            console.log("Error in get_leads_api");
-        });
-    console.log("Submitted!");
-    
-    </script>
+    .right {
+        margin-left: auto;
+    }
+
+    @media (max-width: 600px) {
+        #header {
+            display: block;
+        }
+
+        #dash-btn {
+            margin: 0 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div id="main" class="container">
+    <div id="find_loc" class="d-flex w-50">
+        <div id="find_loc_heading">
+            <h4>Enter your Pincode</h4>
+        </div>
+
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">location_on</i>
+                    <input type="text" id="add-autocomplete-input-city" class="autocomplete">
+                    <label for="add-autocomplete-input-city">Pincode (Eg: 144002)</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading-anim" style="text-align: center; display: none;">
+            <div class="preloader-wrapper small active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a id="find-btn" class="waves-effect waves-light btn">Find</a>
+    </div> <!-- End of find loc -->
+
+    <div id="vac-text" style="position: relative; z-index: 100; display: none;">
+
+    </div>
+
+</div> <!-- End of main -->
+
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+
+    function showAimaation() {
+        $("#loading-anim").css("display", "block");
+        $("#find-btn").css("display", "none");
+    }
+
+    function hideAnimation() {
+        $("#loading-anim").css("display", "none");
+        $("#find-btn").css("display", "block");
+    }
+
+    $("#find-btn").on("click", (e) => {
+
+        var eleId = "add-autocomplete-input-city";
+        if (!document.getElementById(eleId).value) {
+            document.getElementById(eleId).classList.add('invalid');
+            document.getElementById(eleId).focus();
+            return false;
+        }
+
+        data = {
+            pincode: document.getElementById(eleId).value,
+        }
+
+        var payload = {
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        }
+
+        showAimaation();
+        fetch('/vaccine', payload)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if (res['success']) {
+                    var tbody = "";
+                    
+                    res.output.forEach(element => {
+                        console.log(element);
+                        tbody += `
+                        <tr>
+                            <td> ` + element.age_limit + ` </td>
+                            <td> ` + element.available_capacity + ` </td>
+                            <td> ` + element.block_name + ` </td>
+                            <td> ` + element.date + ` </td>
+                            <td> ` + element.name + ` </td>
+                            <td> ` + element.vaccine_type + ` </td>
+                        </tr>`;
+                    });
+                    
+                    var toAdd = `
+                    <table id="data-table">
+                        <thead>
+                        <tr>
+                            <th>Age Limit</th>
+                            <th>Capacity</th>
+                            <th>City</th>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                        </tr>
+                        </thead>
+                
+                        <tbody>
+                            ` + tbody + `
+                        </tbody>
+                    </table>`;
+
+
+                    document.getElementById("vac-text").innerHTML = toAdd;
+                    console.log("successful request");
+                }
+            })
+            .catch(err => {
+                console.log("Error in vaccine_api", err);
+            }).finally(() => {
+                $("#vac-text").css("display", "block");
+                hideAnimation();
+            });
+
+        console.log("Submitted!");
+
+    });
+
+</script>
 
 {% endblock %}
