@@ -247,7 +247,7 @@
                     <span class="material-icons">close</span>
                 </a>
             </div>
-            <div class="image-reviews-slideshow">
+            <div class="image-reviews-slideshow" id = "review-images">
                 <!-- Write code for image reviews image-reviews-slideshow -->
             </div>
             
@@ -412,6 +412,7 @@
                         toAdd += "No reviews yet!";
                     }
                     $("#post-comments").html(toAdd);
+
                     data = {
                         leadId : leadSelected
                     }
@@ -424,6 +425,7 @@
                     }
                     upvotestring = "";
                     downvotestring = "";
+                    imagestring = "";
                     fetch('/get_votes', payload)
                         .then(res => res.json())
                         .then(res => {
@@ -451,8 +453,15 @@
                             console.log(downvotestring);
                             $("#upvoters").html(upvotestring);
                             $("#downvoters").html(downvotestring);
+                            
+                            for(var img of res.urls){
+                                imagestring += `<img style="width:200px; margin:auto;" src="` + img + `">`;
+                            }
+                            $("#review-images").html(imagestring);
                         });
                 });
+
+
         }
 
         handleSendComment = (e) => {
