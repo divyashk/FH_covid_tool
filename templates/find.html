@@ -405,7 +405,7 @@
                             <div class="card-stacked">
                                 <div class="card-content">
                                     <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
-                                    <p>` + val.name + `</p>
+                                    <a class="profile-link" href="/profile/` + val.username + `">` + val.name + `</a>
                                     <div class="address" style="margin-top: 12px">
                                         <a target="_none" rel="noopener" href="https://www.google.com/maps/search/` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `">` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + ` <span class="material-icons my-loc-icon">location_on</span> ` + `</a>
                                     </div>

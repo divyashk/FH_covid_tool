@@ -62,7 +62,7 @@
     </div> <!-- End of find loc -->
 
     <div id="vac-text" style="position: relative; z-index: 100; display: none;">
-
+        No Vaccine Found
     </div>
 
 </div> <!-- End of main -->
@@ -113,6 +113,10 @@
                 if (res['success']) {
                     var tbody = "";
                     
+                    if (!res.output) {
+                        document.getElementById("vac-text").innerHTML = "No Vaccine found";
+                    }
+
                     res.output.forEach(element => {
                         console.log(element);
                         tbody += `
