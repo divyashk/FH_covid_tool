@@ -89,7 +89,7 @@
             <p>Account with this username exists, enter the password to get loggined.</p>
 
             <div id="us-just-show-1" class="center-align">
-                <!-- <i class="material-icons" style="font-size: 100px; color: #26a69a;">account_circle</i> -->
+                <i id="no-pp" class="material-icons" style="font-size: 100px; color: #26a69a; display: none;">account_circle</i>
                 <img id = "pp" src="">
                 <label id="user_name_1" style="font-size: 1.8rem;" for="user_name_1">UserName</label>
             </div>
@@ -216,6 +216,11 @@
                     byId('pass').focus();
                     byId('pp').src = res['image'];
                     // Write code to show res['image']
+
+                    if (!res['image']) {
+                        byId("no-pp").style.display = "block";
+                        byId("pp").style.display = "none";
+                    }
                 } else {
 
                     if (res['err_code'] === '1') {

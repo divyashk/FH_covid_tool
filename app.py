@@ -217,7 +217,10 @@ def check_if_username_exists():
 
         if userid_ref.exists:
             print("username exists")
-            return jsonify(success=True , image=userid_ref.to_dict()["image"])
+            if "image" in userid_ref.to_dict():
+                return jsonify(success=True , image=userid_ref.to_dict()["image"])
+            else:
+                return jsonify(success=True, image="")
         else:
             print("username doesn't exists")
             return jsonify(success=False, err_code='1')
