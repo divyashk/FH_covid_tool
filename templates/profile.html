@@ -147,21 +147,7 @@
           </div>
           <div class="profile-right col s6">
             <div class="rating">
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star
-              </span>
-              <span class="material-icons">
-                star_border
-                </span>
+              
             </div>
           </div>
         </div>
@@ -301,6 +287,7 @@
               edit
           </span>
       </div>
+      <div class="up-vote-count">` + val.net_upvotes + `</div>
       <div class="remove-item" onclick="handleRemove(` + index + `, -1)">
           <span class="material-icons color-red">
               delete
@@ -334,7 +321,6 @@
 
   }
 
-
   db.collection("users").doc(username).get()
     .then(doc => {
       console.log("Doc", doc.data());
@@ -343,6 +329,31 @@
 
       $("#show-name-here").html(data.name);
       $("#show-phone-here").html(` <i class="material-icons prefix" style="vertical-align: middle;">phone</i> ` + data.phone + ``);
+
+      let ratingString = "";
+      var start = 0;
+      var end = 4;
+
+      // Ratings
+      if (data.net_rating) {
+        start = data.net_rating;
+      }
+
+      for(let i=0; i<start;i++) {
+        ratingString += `
+        <span class="material-icons">
+          star
+        </span>`
+      }
+
+      for(let i=start; i<=end;i++) {
+        ratingString += `
+        <span class="material-icons">
+          star_border
+        </span>`
+      }
+
+      $(".rating").html(ratingString);
 
       // Leads should be present
       if (!data.leads) {
