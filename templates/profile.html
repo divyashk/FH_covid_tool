@@ -123,7 +123,7 @@
     <div class="asked_footer">
       <ul>
         <li><button class="tablink" onclick="openPage('Home', this)" id="defaultOpen">Profile</button></li>
-        <li><button class="tablink" onclick="openPage('About', this)"> Leads Added </button></li>
+        <li><button class="tablink" id="leads-tab" onclick="openPage('About', this)"> Leads Added </button></li>
       </ul>
     </div>
 
@@ -156,13 +156,26 @@
 {% block js %}
 
 <script>
+
+  if (location.hash == "#About") {
+    document.getElementById("leads-tab").click();
+  } else {
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+  }
+
+
   function openPage(pageName, elmnt) {
+    console.log("Open page callsed");
+
     // Hide all elements with class="tabcontent" by default */
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
       tabcontent[i].style.display = "none";
     }
+
+    location.hash = pageName;
 
     // Remove the background color of all tablinks/buttons
     tablinks = document.getElementsByClassName("tablink");
@@ -176,8 +189,7 @@
     // Add the specific color to the button used to open the tab content
     elmnt.style.backgroundColor = "#26a69a";
   }
-  // Get the element with id="defaultOpen" and click on it
-  document.getElementById("defaultOpen").click();
+
   const db = firebase.firestore();
   const username = "{{username}}";
 
