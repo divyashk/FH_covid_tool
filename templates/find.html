@@ -21,6 +21,10 @@
             margin: 0 12px;
         }
     }
+
+    .card-action {
+        display: flex;
+    }
 </style>
 {% endblock %}
 
@@ -101,6 +105,20 @@
         <div id="leads-show" class="row"></div>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Modal Header</h4>
+            <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div>
+    </div>
+
+    <!-- Modal Trigger -->
+    <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
+
 </div> <!-- End of main -->
 
 
@@ -138,11 +156,19 @@
             },
         });
 
+        $('.modal').modal();
         $('select').formSelect();
 
         $('select').on('contentChanged', function () {
             $(this).formSelect();
         });
+
+        openModal = (index, e) => {
+            console.log("index", index);
+
+            var instance = M.Modal.getInstance(document.getElementById("modal1"));
+            instance.open();
+        }
 
 
         $("#autocomplete-input-item").on('change', function () {
@@ -199,27 +225,27 @@
             showAimaation();
 
             db.collection("Inventory").doc(globalItem).collection(globalState).get()
-            .then((querySnapshot) => {
+                .then((querySnapshot) => {
 
-                console.log("Query snapshot of city");
-                // Loop in each query snapshot and add options in autocomplete-input-item
+                    console.log("Query snapshot of city");
+                    // Loop in each query snapshot and add options in autocomplete-input-item
 
-                var optionsToAdd = "<option value=\"\" disabled selected>Choose City</option>";
+                    var optionsToAdd = "<option value=\"\" disabled selected>Choose City</option>";
 
-                querySnapshot.forEach((doc) => {
-                    // console.log(doc.id, " => ", doc.data());
-                    optionsToAdd += "<option value=\"" + doc.id + "\"> " + doc.id + " </option>"
+                    querySnapshot.forEach((doc) => {
+                        // console.log(doc.id, " => ", doc.data());
+                        optionsToAdd += "<option value=\"" + doc.id + "\"> " + doc.id + " </option>"
+                    });
+
+                    // Now update the options
+                    $("#autocomplete-input-city").html(optionsToAdd);
+                    $("#autocomplete-input-city").trigger('contentChanged');
+                })
+                .catch((err) => {
+                    console.log("Error came while fetching data", err);
+                }).finally(() => {
+                    hideAnimation();
                 });
-
-                // Now update the options
-                $("#autocomplete-input-city").html(optionsToAdd);
-                $("#autocomplete-input-city").trigger('contentChanged');
-            })
-            .catch((err) => {
-                console.log("Error came while fetching data", err);
-            }).finally(() => {
-                hideAnimation();
-            });
 
         });
 
@@ -269,7 +295,7 @@
 
             // Write logic for locally faster
             const leadId = leadsData[leadIndex].leadId;
-            
+
             // First update the votes
             const leadEle = $("#lead" + leadId);
             leadEle.find(".up-vote-count").html(data.net_upvotes + data.change_to - data.cur_status);
@@ -329,11 +355,11 @@
         }
 
         // Do comment these lines
-        // data = {
-        //     item: 'oxygen cylinder',
-        //     state: 'uttar pradesh',
-        //     city: 'ghaziabad',
-        // }
+        data = {
+            item: 'oxygen cylinder',
+            state: 'uttar pradesh',
+            city: 'ghaziabad',
+        }
 
         if (!data.item) {
             alert("Please select Item name");
@@ -404,15 +430,21 @@
                         <div class="card horizontal">                      
                             <div class="card-stacked">
                                 <div class="card-content">
-                                    <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
+                                    <div class="card-head" onclick="openModal(` + index + `, event)"> ` + val.item + " x " + val.quantity + ` </div>
                                     <a class="profile-link" href="/profile/` + val.username + `">` + val.name + `</a>
                                     <div class="address" style="margin-top: 12px">
                                         <a target="_none" rel="noopener" href="https://www.google.com/maps/search/` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `">` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + ` <span class="material-icons my-loc-icon">location_on</span> ` + `</a>
                                     </div>
                                 </div>
                                 <div class="card-action">
+                                    <div>
                                     <i class="material-icons prefix" style="vertical-align: middle;">phone</i>
                                     ` + val.contact + `
+                                    </div>
+                                    <div style="margin-left: auto; cursor: pointer;" onclick="openModal(` + index + `, event)">
+                                        ` + (Boolean(val.comments) ? (val.comments.length) : 0) + `
+                                        <span class="material-icons" style="vertical-align: middle">comment</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="right-row">

@@ -110,6 +110,12 @@
     padding: 32px 20px;
     height: 100%;
   }
+
+  .rating {
+    text-align: right;
+    margin-top: 32px;
+    color: orange;
+  }
 </style>
 
 {% endblock %}
@@ -130,12 +136,35 @@
     <div>
 
       <div id="Home" class="tabcontent">
-        <div class="asked_profile">
-          <div class="asked_profile-content">
-            <h3 id="show-name-here"></h3>
+        <div class="profile-content row">
+          <div class="profile-left col s6">
+            <div class="asked_profile">
+              <div class="asked_profile-content">
+                <h3 id="show-name-here"></h3>
+              </div>
+            </div>
+            <p id="show-phone-here"> <i class="material-icons prefix" style="vertical-align: middle;">phone</i></p>
+          </div>
+          <div class="profile-right col s6">
+            <div class="rating">
+              <span class="material-icons">
+                star
+              </span>
+              <span class="material-icons">
+                star
+              </span>
+              <span class="material-icons">
+                star
+              </span>
+              <span class="material-icons">
+                star
+              </span>
+              <span class="material-icons">
+                star_border
+                </span>
+            </div>
           </div>
         </div>
-        <p id="show-phone-here"> <i class="material-icons prefix" style="vertical-align: middle;">phone</i></p>
       </div>
 
       <div id="About" class="tabcontent">

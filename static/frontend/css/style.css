@@ -142,6 +142,7 @@ nav ul a {
 .card-head {
     font-size: 1.48rem;
     color: rgb(22, 22, 22);
+    cursor: pointer;
 }
 
 .profile-main{
