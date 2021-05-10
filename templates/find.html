@@ -577,7 +577,7 @@
                                 <div class="card-action">
                                     <div>
                                     <i class="material-icons prefix" style="vertical-align: middle;">phone</i>
-                                    ` + val.contact + `
+                                    <a href= tel:` + val.contact + `>` + val.contact + `</a>
                                     </div>
                                     <div style="margin-left: auto; cursor: pointer;" onclick="openModal(` + index + `, event)">
                                         ` + (Boolean(val.comments) ? (val.comments.length) : 0) + `
