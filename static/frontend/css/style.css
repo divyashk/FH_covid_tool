@@ -164,3 +164,12 @@ nav ul a {
     margin: auto;
     cursor: pointer;
 }
+
+.profile-link {
+    color: #313131;
+    cursor: pointer;
+}
+
+.profile-link:hover {
+    text-decoration: underline;
+}
