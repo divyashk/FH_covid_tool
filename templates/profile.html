@@ -192,6 +192,7 @@
 
   const db = firebase.firestore();
   const username = "{{username}}";
+  const isMe = "{{ isMe }}";
 
   var leadsData = [];
 
@@ -262,6 +263,23 @@
       }
     }
 
+    var rightRow = "";
+
+    if (isMe == "yes") {
+      rightRow = `<div class="right-row">
+      <div class="edit-item" onclick="handleUpdate(` + index + `, 1)">
+          <span class="material-icons color-blue">
+              edit
+          </span>
+      </div>
+      <div class="remove-item" onclick="handleRemove(` + index + `, -1)">
+          <span class="material-icons color-red">
+              delete
+          </span>
+      </div>
+    </div>`;
+    }
+
     toAdd += `
       <div class="col s12 m6">
           <div class="card horizontal">                      
@@ -278,18 +296,7 @@
                   ` + val.contact + `
               </div>
               </div>
-              <div class="right-row">
-                  <div class="edit-item" onclick="handleUpdate(` + index + `, 1)">
-                      <span class="material-icons color-blue">
-                          edit
-                      </span>
-                  </div>
-                  <div class="remove-item" onclick="handleRemove(` + index + `, -1)">
-                      <span class="material-icons color-red">
-                          delete
-                      </span>
-                  </div>
-              </div>
+              ` + rightRow + `
           </div>
       </div>
       `;

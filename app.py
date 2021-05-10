@@ -309,8 +309,14 @@ def login_register():
 @is_logged_in
 def profile():
     if session['username']:
-        username= session['username'];
-    return render_template("profile.html", username = username);
+        username= session['username']
+    return render_template("profile.html", username = username, isMe="yes")
+
+@app.route('/profile/<id>')
+def profile_others(id):
+    print("for id", id)
+    return render_template("profile.html", username = id, isMe="no")
+
 
 @app.route('/logout')
 def logout():
