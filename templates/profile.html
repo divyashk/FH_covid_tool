@@ -99,7 +99,8 @@
   }
 
   .tablink:hover {
-    background-color: var(--normal-shade);;
+    background-color: var(--normal-shade);
+    ;
   }
 
   /* Style the tab content (and add height:100% for full page content) */
@@ -122,7 +123,7 @@
     <div class="asked_footer">
       <ul>
         <li><button class="tablink" onclick="openPage('Home', this)" id="defaultOpen">Profile</button></li>
-        <li><button class="tablink" onclick="openPage('About', this)">Post</button></li>
+        <li><button class="tablink" onclick="openPage('About', this)"> Leads Added </button></li>
       </ul>
     </div>
 
@@ -138,7 +139,7 @@
       </div>
 
       <div id="About" class="tabcontent">
-        <h3>Posts</h3>
+        <h3>Leads</h3>
         <div id="profile-leads"></div>
       </div>
     </div>
@@ -210,9 +211,9 @@
           <div class="card horizontal">                      
               <div class="card-stacked">
                   <div class="card-content">
-                      <div class="card-head"> ` + val.item + ` </div>
-                      <p>` + val.name + `</p>
-                      <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
+                    <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
+                    <p>` + val.name + `</p>
+                    <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
                   </div>
                   <div class="card-action">
                       ` + val.contact + `
@@ -244,8 +245,8 @@
           const refs = val.split("/");
           console.log("REfs are", refs);
 
-          db.collection(refs[0]).doc(refs[1]).collection(refs[2]).doc(refs[3]).collection(refs[4]).doc(refs[5])  
-          .get().then(doc2 => {
+          db.collection(refs[0]).doc(refs[1]).collection(refs[2]).doc(refs[3]).collection(refs[4]).doc(refs[5])
+            .get().then(doc2 => {
               console.log(doc2.data());
               var dic2 = doc2.data();
               dic2["leadId"] = refs[5];

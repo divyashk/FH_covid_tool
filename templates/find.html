@@ -385,7 +385,7 @@
                                 <div class="card-content">
                                     <div class="card-head"> ` + val.item + " x " + val.quantity + ` </div>
                                     <p>` + val.name + `</p>
-                                    <p>` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</p>
+                                    <a target="_none" rel="noopener" href="https://www.google.com/maps/search/` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `">` + (Boolean(val.address) ? (val.address + `, `) : "") + val.city + `, ` + val.state + `</a>
                                 </div>
                                 <div class="card-action">
                                     ` + val.contact + `
