@@ -170,8 +170,9 @@
     <div id="modal1" class="modal">
         <div class='wrapper-tab-btn-link'>
             <ul style="display: inline-flex;">
-                    <li><button class="tablink" onclick="openPage('reviews-tab', this)" id="defaultOpen">Reviews</button></li>
+                    <li><button class="tablink" onclick="openPage('reviews-tab', this)" id="defaultOpen">Comments</button></li>
                     <li><button class="tablink" id="leads-tab" onclick="openPage('upvotes-tab', this)"> Upvotes </button></li>
+                    <li><button class="tablink" id="leads-tab" onclick="openPage('image-reviews-tab', this)"> Image Reviews </button></li>
             </ul>
         </div>
         <div id="reviews-tab" class="tabcontent">
@@ -240,6 +241,33 @@
             </div>
         </div>
 
+        <div id="image-reviews-tab" class="tabcontent">
+            <div class="modal-content">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">
+                    <span class="material-icons">close</span>
+                </a>
+            </div>
+            <div class="image-reviews-slideshow">
+                <!-- Write code for image reviews image-reviews-slideshow -->
+            </div>
+            
+            {% if(username) %}
+            <form onsubmit="handleImageUpload(event)" class="modal-footer">
+                <div class="input-field inline">
+                    <div class="btn" style="margin-right: 12%;">
+                        <span>Upload Review Image</span>
+                        <input id = "upload-review-image" type="file" accept="image/*">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input id = "pp-input" class="file-path validate" type="text">
+                    </div>
+                </div>
+                <button type="submit" class="submit waves-effect waves-green btn-flat">
+                    <span class="material-icons" style="vertical-align: bottom;"> send </span>
+                </button>
+            </form>
+            {% endif %}
+        </div>
 
         
     </div>
@@ -467,6 +495,41 @@
 
             console.log("Submitted!");
 
+        }
+
+        function addImage(url , leadSelected){
+            console.log(url);
+            // Send POST request with url and leadSelected
+            data = {
+                url : url,
+                leadId : leadSelected,
+            }
+            var payload = {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }
+
+            fetch('/imageReviewUpload', payload)
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res);
+                });
+        }
+
+        handleImageUpload = (e) => {
+            // console.log(leadSelected);
+            e.preventDefault();
+            const ref = firebase.storage().ref();
+            const file = document.querySelector('#upload-review-image').files[0];
+            const name = (+new Date()) + '-' + file.name;
+            const metadata = { contentType: file.type };
+            const task = ref.child(name).put(file, metadata);
+            task.then(snapshot => snapshot.ref.getDownloadURL())
+                .then(url => {addImage(url , leadSelected)})
+            console.log("submit button called", e);
         }
 
 
@@ -743,6 +806,7 @@
                                     <div style="margin-left: auto; cursor: pointer;" onclick="openModal(` + index + `, event)">
                                         ` + (Boolean(val.comments) ? (val.comments.length) : 0) + `
                                         <span class="material-icons" style="vertical-align: middle">comment</span>
+                                        <span class="material-icons" style="vertical-align: middle; margin-bottom:7px;">add_a_photo</span>
                                     </div>
                                 </div>
                             </div>

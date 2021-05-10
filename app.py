@@ -291,8 +291,9 @@ def update_rating():
 @app.route("/get_votes", methods=['POST'])
 def get_votes():
     data = request.json 
+    print("Get votes" , data)
     leadId = data["leadId"]
-    ndata = db.collection("Inven").document().get().to_dict()
+    ndata = db.collection("Inventory").document().get().to_dict()
     address = db.collection("references").document(leadId).get().to_dict()["address"]
     address = address.split("/")
     doc = db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).get().to_dict()
@@ -311,6 +312,18 @@ def get_votes():
     print(upvoters)
     print(downvoters)
     return jsonify(upvoters = upvoters , downvoters = downvoters)
+
+@app.route("/imageReviewUpload", methods=['POST'])
+def handle_image_upload():
+    data = request.json 
+    print("Image review upload" , data)
+    leadId = data["leadId"]
+    url = data["url"]
+    address = db.collection("references").document(leadId).get().to_dict()["address"]
+    address = address.split("/")
+    doc = db.collection("Inventory").document(address[1]).collection(address[2]).document(address[3]).collection("leads").document(leadId).set({
+        "imageReviews" : firestore.ArrayUnion([url])} , merge = True)
+    return jsonify(success = True)
 
 """
 Routes
