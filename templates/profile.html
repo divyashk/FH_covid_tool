@@ -232,7 +232,8 @@
     const qty = leadsData[index].quantity;
     const address = leadsData[index].address;
     const contact = leadsData[index].contact;
-    location.href = "/add?id=" + leadId + "&item=" + item + "&state=" + state + "&city=" + city + "&qty=" + qty + "&address=" + address + "&contact=" + contact;
+    const name = leadsData[index].name;
+    location.href = "/add?id=" + leadId + "&item=" + item + "&state=" + state + "&city=" + city + "&qty=" + qty + "&address=" + address + "&contact=" + contact + "&name=" + name;
   }
 
   handleRemove = (index) => {

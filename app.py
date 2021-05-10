@@ -345,28 +345,28 @@ def find():
 @is_logged_in
 def add():
     id = request.args.get('id');
+    dict_pass = {};
     if id != None:
-        dict_pass = {};
         dict_pass["id"] = id
         dict_pass["contact"] = request.args.get('contact');
         dict_pass["address"] = request.args.get('address');
         dict_pass["city"] = request.args.get('city');
         dict_pass["name"] = request.args.get('name');
         dict_pass["item_name"] = request.args.get('item');
-        return render_template("add.html", data= dict_pass)
-    else:
-        return render_template("add.html")
-    
+        for x in dict_pass.keys():
+            if dict_pass[x] is None:
+                print("missing value - ",x);
 
-    
-    
+        return render_template("add.html", data=dict_pass, check = 1)
+    else:
+        return render_template("add.html", data=dict_pass, check = 0)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_register():
     '''
     The main login page which functions using the apis and all
     '''
-
     if "logged_in" in session and session["logged_in"]:
         return redirect(url_for("profile"))
 

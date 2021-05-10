@@ -155,11 +155,26 @@
         .then(res => res.json())
         .then(res => {
             const user_info = res['user_info'];
-            document.getElementById('add-input-name').value = user_info['name'];
-            document.getElementById('add-input-contact').value = user_info['contact'];
+            
+            // using data from the get request 
+            {% if check %}
+                document.getElementById('add-input-name').value = "{{ data['name'] }}";
+                document.getElementById('add-input-contact').value = "{{ data['contact'] }}";
+                document.getElementById('add-autocomplete-input-item').value = "{{ data['item_name'] }}";
+                document.getElementById('add-autocomplete-input-quantity').value = "{{ data['quantity'] }}";
+                document.getElementById('add-autocomplete-input-state').value = "{{ data['state'] }}";
+                console.log("{{ data['state'] }}");
+                document.getElementById('add-autocomplete-input-city').value = "{{ data['city'] }}";
+                document.getElementById('add-autocomplete-input-address').value = "{{ data['address'] }}";
+            {% else %}
+                document.getElementById('add-input-name').value = user_info['name'];
+                document.getElementById('add-input-contact').value = user_info['contact'];
+            {% endif %}
+
             $(document).ready(function () {
                 M.updateTextFields();
             });
+
         })
         .catch(err => {
             console.log("Error came in api");
@@ -171,6 +186,7 @@
     var inp_quantity = $('#add-autocomplete-input-quantity');
     var inp_address = $("#add-autocomplete-input-address");
 
+        
 
 
     $(document).ready(function () {
