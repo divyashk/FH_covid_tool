@@ -321,7 +321,7 @@
               </div>
               <div class="card-action">
                   <i class="material-icons prefix" style="vertical-align: middle;">phone</i>
-                  ` + val.contact + `
+                  <a href= tel:` + val.contact + `>` + val.contact + `</a>
               </div>
               </div>
               ` + rightRow + `
@@ -361,7 +361,7 @@
       const data = doc.data();
 
       $("#show-name-here").html(data.name);
-      $("#show-phone-here").html(` <i class="material-icons prefix" style="vertical-align: middle;">phone</i> ` + data.phone + ``);
+      $("#show-phone-here").html(`<i class="material-icons prefix" style="vertical-align: middle;">phone</i> <a href= tel:` + data.phone + `>` + data.phone + `</a>`);
       $("#pp").prop("src" , data.image);
       // Ratings
       if (data.net_rating) {
